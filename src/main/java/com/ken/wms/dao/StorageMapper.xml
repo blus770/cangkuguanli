@@ -43,7 +43,7 @@
 		where
 		 	s.RECORD_GOODID = g.GOOD_ID and
 		 	s.RECORD_REPOSITORY = r.REPO_ID
-		 	<if test="repositoryID != null">
+		 	<if test="repositoryID > 0">
 		 		and r.REPO_ID = #{repositoryID}
 		 	</if>
 	</select>

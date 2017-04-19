@@ -6,6 +6,9 @@ import com.ken.wms.common.util.ResponseUtil;
 import com.ken.wms.domain.StockRecordDTO;
 import com.ken.wms.exception.StockRecordManageServiceException;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.session.Session;
+import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,8 +16,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,27 +39,56 @@ public class StockRecordManageHandler {
     /**
      * 货物出库操作
      *
-     * @param customerID   客户ID
-     * @param goodsID      货物ID
-     * @param repositoryID 仓库ID
-     * @param number       出库数量
-     * @param request      http请求
+     * @param customerID      客户ID
+     * @param goodsID         货物ID
+     * @param repositoryIDStr 仓库ID
+     * @param number          出库数量
      * @return 返回一个map，key为result的值表示操作是否成功
      */
     @RequestMapping(value = "stockOut", method = RequestMethod.POST)
     public
     @ResponseBody
     Map<String, Object> stockOut(@RequestParam("customerID") Integer customerID,
-                                 @RequestParam("goodsID") Integer goodsID, @RequestParam("repositoryID") Integer repositoryID,
-                                 @RequestParam("number") long number, HttpServletRequest request) throws StockRecordManageServiceException {
+                                 @RequestParam("goodsID") Integer goodsID,
+                                 @RequestParam(value = "repositoryID", required = false) String repositoryIDStr,
+                                 @RequestParam("number") long number) throws StockRecordManageServiceException {
         // 初始化 Response
         Response responseContent = responseUtil.newResponseInstance();
+        String result = Response.RESPONSE_RESULT_ERROR;
+        boolean authorizeCheck = true;
+        boolean argumentCheck = true;
+        Integer repositoryID = null;
 
-        HttpSession session = request.getSession();
+        // 参数检查
+        if (repositoryIDStr != null) {
+            if (StringUtils.isNumeric(repositoryIDStr)) {
+                repositoryID = Integer.valueOf(repositoryIDStr);
+            } else {
+                argumentCheck = false;
+                responseContent.setResponseMsg("request argument error");
+            }
+        }
+
+        // 获取 session 中的信息
+        Subject currentUser = SecurityUtils.getSubject();
+        Session session = currentUser.getSession();
         String personInCharge = (String) session.getAttribute("userName");
+        Object repositoryIDBelong = session.getAttribute("repositoryBelong");
 
-        String result = stockRecordManageService.stockOutOperation(customerID, goodsID, repositoryID, number, personInCharge) ?
-                Response.RESPONSE_RESULT_SUCCESS : Response.RESPONSE_RESULT_ERROR;
+        // 设置非管理员请求的仓库ID
+        if (!currentUser.hasRole("systemAdmin")) {
+            if (repositoryIDBelong.getClass() == Integer.class) {
+                repositoryID = (Integer) repositoryIDBelong;
+            } else {
+                authorizeCheck = false;
+                responseContent.setResponseMsg("You are not authorized");
+            }
+        }
+
+        if (authorizeCheck && argumentCheck) {
+            if (stockRecordManageService.stockOutOperation(customerID, goodsID, repositoryID, number, personInCharge))
+                result = Response.RESPONSE_RESULT_SUCCESS;
+        }
 
         // 设置 Response
         responseContent.setResponseResult(result);
@@ -68,27 +98,58 @@ public class StockRecordManageHandler {
     /**
      * 货物入库操作
      *
-     * @param supplierID   供应商ID
-     * @param goodsID      货物ID
-     * @param repositoryID 仓库ID
-     * @param number       入库数目
-     * @param request      http 请求
+     * @param supplierID      供应商ID
+     * @param goodsID         货物ID
+     * @param repositoryIDStr 仓库ID
+     * @param number          入库数目
      * @return 返回一个map，key为result的值表示操作是否成功
      */
     @RequestMapping(value = "stockIn", method = RequestMethod.POST)
     public
     @ResponseBody
     Map<String, Object> stockIn(@RequestParam("supplierID") Integer supplierID,
-                                @RequestParam("goodsID") Integer goodsID, @RequestParam("repositoryID") Integer repositoryID,
-                                @RequestParam("number") long number, HttpServletRequest request) throws StockRecordManageServiceException {
+                                @RequestParam("goodsID") Integer goodsID,
+                                @RequestParam(value = "repositoryID", required = false) String repositoryIDStr,
+                                @RequestParam("number") long number) throws StockRecordManageServiceException {
         // 初始化 Response
         Response responseContent = responseUtil.newResponseInstance();
+        String result = Response.RESPONSE_RESULT_ERROR;
+        boolean authorizeCheck = true;
+        boolean argumentCheck = true;
+        Integer repositoryID = null;
 
-        HttpSession session = request.getSession();
+        // 参数检查
+        if (repositoryIDStr != null) {
+            if (StringUtils.isNumeric(repositoryIDStr)) {
+                repositoryID = Integer.valueOf(repositoryIDStr);
+            } else {
+                argumentCheck = false;
+                responseContent.setResponseMsg("request argument error");
+            }
+        }
+
+        // 获取session中的信息
+        Subject currentUser = SecurityUtils.getSubject();
+        Session session = currentUser.getSession();
         String personInCharge = (String) session.getAttribute("userName");
+        Object repositoryIDBelong = session.getAttribute("repositoryBelong");
 
-        String result = stockRecordManageService.stockInOperation(supplierID, goodsID, repositoryID, number, personInCharge) ?
-                Response.RESPONSE_RESULT_SUCCESS : Response.RESPONSE_RESULT_ERROR;
+        // 设置非管理员请求的仓库ID
+        if (!currentUser.hasRole("systemAdmin")) {
+            if (repositoryIDBelong.getClass() == Integer.class) {
+                repositoryID = (Integer) repositoryIDBelong;
+            } else {
+                authorizeCheck = false;
+                responseContent.setResponseMsg("You are not authorized");
+            }
+        }
+
+        // 执行 Service
+        if (authorizeCheck && argumentCheck) {
+            if (stockRecordManageService.stockInOperation(supplierID, goodsID, repositoryID, number, personInCharge)) {
+                result = Response.RESPONSE_RESULT_SUCCESS;
+            }
+        }
 
         // 设置 Response
         responseContent.setResponseResult(result);
@@ -110,11 +171,11 @@ public class StockRecordManageHandler {
     @RequestMapping(value = "searchStockRecord", method = RequestMethod.GET)
     public @ResponseBody
     Map<String, Object> getStockRecord(@RequestParam("searchType") String searchType,
-                                          @RequestParam("repositoryID") String repositoryIDStr,
-                                          @RequestParam("startDate") String startDateStr,
-                                          @RequestParam("endDate") String endDateStr,
-                                          @RequestParam("limit") int limit,
-                                          @RequestParam("offset") int offset) throws ParseException, StockRecordManageServiceException {
+                                       @RequestParam("repositoryID") String repositoryIDStr,
+                                       @RequestParam("startDate") String startDateStr,
+                                       @RequestParam("endDate") String endDateStr,
+                                       @RequestParam("limit") int limit,
+                                       @RequestParam("offset") int offset) throws ParseException, StockRecordManageServiceException {
         // 初始化 Response
         Response responseContent = responseUtil.newResponseInstance();
         List<StockRecordDTO> rows = null;

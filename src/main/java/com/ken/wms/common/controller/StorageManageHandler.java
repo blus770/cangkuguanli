@@ -65,7 +65,7 @@ public class StorageManageHandler {
                     Integer repositoryID = Integer.valueOf(repositoryBelong);
                     queryResult = storageManageService.selectAll(repositoryID, offset, limit);
                 } else {
-                    queryResult = storageManageService.selectAll(null, offset, limit);
+                    queryResult = storageManageService.selectAll(-1, offset, limit);
                 }
                 break;
             case SEARCH_BY_GOODS_ID:

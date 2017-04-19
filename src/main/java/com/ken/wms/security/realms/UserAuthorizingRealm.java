@@ -107,7 +107,12 @@ public class UserAuthorizingRealm extends AuthorizingRealm {
                 session.setAttribute("userID", userID);
                 session.setAttribute("userName", userInfoDTO.getUserName());
                 List<RepositoryAdmin> repositoryAdmin = (List<RepositoryAdmin>) repositoryAdminManageService.selectByID(userInfoDTO.getUserID()).get("data");
-                session.setAttribute("repositoryBelong", (repositoryAdmin.isEmpty()) ? "none" : repositoryAdmin.get(0).getRepositoryBelongID());
+                session.setAttribute("repositoryBelong", "none");
+                if (!repositoryAdmin.isEmpty()){
+                    Integer repositoryBelong = repositoryAdmin.get(0).getRepositoryBelongID();
+                    if (repositoryBelong != null)
+                        session.setAttribute("repositoryBelong", repositoryBelong);
+                }
 
 
                 // 结合验证码对密码进行处理

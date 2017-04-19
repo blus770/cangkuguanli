@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <script>
-var stockin_repository = null;// 入库仓库编号
+// var stockin_repository = null;// 入库仓库编号
 var stockin_supplier = null;// 入库供应商编号
 var stockin_goods = null;// 入库货物编号
 var stockin_number = null;// 入库数量
@@ -10,7 +10,6 @@ var supplierCache = new Array();// 供应商信息缓存
 var goodsCache = new Array();//货物信息缓存
 
 $(function(){
-	repositorySelectorInit();
 	dataValidateInit();
 	detilInfoToggle();
 
@@ -24,7 +23,7 @@ $(function(){
 function dataValidateInit(){
 	$('#stockin_form').bootstrapValidator({
 		message : 'This is not valid',
-		
+
 		fields : {
 			stockin_input : {
 				validators : {
@@ -76,7 +75,7 @@ function goodsAutocomplete(){
 			$('#goods_input').val(ui.item.label);
 			stockin_goods = ui.item.value;
 			goodsInfoSet(stockin_goods);
-			loadStorageInfo();
+			// loadStorageInfo();
 			return false;
 		}
 	})
@@ -133,28 +132,28 @@ function supplierInfoSet(supplierID){
 				$('#info_supplier_ID').text('-');
 			else
 				$('#info_supplier_ID').text(detailInfo.id);
-			
+
 			if(detailInfo.name==null)
 				$('#info_supplier_name').text('-');
 			else
 				$('#info_supplier_name').text(detailInfo.name);
-			
+
 			if(detailInfo.tel==null)
 				$('#info_supplier_tel').text('-');
 			else
 				$('#info_supplier_tel').text(detailInfo.tel);
-			
+
 			if(detailInfo.personInCharge==null)
 				$('#info_supplier_person').text('-');
 			else
 				$('#info_supplier_person').text(detailInfo.personInCharge);
-			
+
 			if(detailInfo.email==null)
 				$('#info_supplier_email').text('-');
 			else
 				$('#info_supplier_email').text(detailInfo.email);
-			
-			
+
+
 			if(detailInfo.adress==null)
 				$('#info_supplier_address').text('-');
 			else
@@ -174,22 +173,22 @@ function goodsInfoSet(goodsID){
 				$('#info_goods_ID').text('-');
 			else
 				$('#info_goods_ID').text(detailInfo.id);
-			
+
 			if(detailInfo.name==null)
 				$('#info_goods_name').text('-');
 			else
 				$('#info_goods_name').text(detailInfo.name);
-			
+
 			if(detailInfo.type==null)
 				$('#info_goods_type').text('-');
 			else
 				$('#info_goods_type').text(detailInfo.type);
-			
+
 			if(detailInfo.size==null)
 				$('#info_goods_size').text('-');
 			else
 				$('#info_goods_size').text(detailInfo.size);
-			
+
 			if(detailInfo.value==null)
 				$('#info_goods_value').text('-');
 			else
@@ -234,30 +233,38 @@ function repositorySelectorInit(){
 		error : function(response){
 			$('#repository_selector').append("<option value='-1'>加载失败</option>");
 		}
-		
+
 	})
 }
 
-// 获取仓库当前库存量
+var delay = (function(){
+	var timer = 0;
+	return function(callback, ms){
+	clearTimeout (timer);
+	timer = setTimeout(callback, ms);
+	};
+})();
+
 function fetchStorage(){
-	$('#repository_selector').change(function(){
-		stockin_repository = $(this).val();
-		loadStorageInfo();
+	$('#stockin_input,#goods_input').keyup(function() {
+	  delay(function(){
+	    loadStorageInfo();
+	  }, 1000 );
 	});
 }
 
 function loadStorageInfo(){
-	if(stockin_repository != null && stockin_goods != null){
+	if(stockin_goods != null){
 		$.ajax({
 			type : 'GET',
-			url : 'storageManage/getStorageListWithRepository',
+			url : 'storageManage/getStorageList',
 			dataType : 'json',
 			contentType : 'application/json',
 			data : {
 				offset : -1,
 				limit : -1,
 				searchType : 'searchByGoodsID',
-				repositoryBelong : stockin_repository,
+				// repositoryBelong : stockin_repository,
 				keyword : stockin_goods
 			},
 			success : function(response){
@@ -269,7 +276,7 @@ function loadStorageInfo(){
 				}
 			},
 			error : function(response){
-				
+
 			}
 		})
 	}
@@ -285,7 +292,7 @@ function stockInOption(){
 		}
 
 		data = {
-			repositoryID : stockin_repository,
+			// repositoryID : stockin_repository,
 			supplierID : stockin_supplier,
 			goodsID : stockin_goods,
 			number : $('#stockin_input').val(),
@@ -300,14 +307,18 @@ function stockInOption(){
 			success : function(response){
 				var msg;
 				var type;
-				
+
 				if(response.result == "success"){
 					type = 'success';
 					msg = '货物入库成功';
 					inputReset();
 				}else{
 					type = 'error';
-					msg = '货物入库失败'
+                    if (response.msg == 'You are not authorized') {
+                        msg = "你未授权操作此仓库，请联系系统管理员"
+                    }else{
+                        msg = '货物入库失败'
+                    }
 				}
 				infoModal(type, msg);
 			},
@@ -337,7 +348,7 @@ function inputReset(){
 	$('#info_goods_type').text('-');
 	$('#info_goods_value').text('-');
 	$('#info_storage').text('-');
-	$('#stockin_form').bootstrapValidator("resetForm",true); 
+	$('#stockin_form').bootstrapValidator("resetForm",true);
 }
 
 //操作结果提示模态框
@@ -523,22 +534,6 @@ function infoModal(type, msg) {
 								</div>
 							</div>
 						</div>
-                        <div class="row" style="margin-top: 10px">
-                            <div class="col-md-6 col-sm-6">
-                                <div class="row">
-                                    <div class="col-md-1 col-sm-1"></div>
-                                    <div class="col-md-10 col-sm-11">
-                                        <form action="" class="form-inline">
-                                            <div class="form-group">
-                                                <label for="" class="form-label">入库仓库：</label>
-                                                <select name="" id="repository_selector" class="form-control">
-                                                </select>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
 						<div class="row" style="margin-top:20px">
 							<div class="col-md-6 col-sm-6">
 								<div class="row">

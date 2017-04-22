@@ -207,7 +207,7 @@ public class SupplierManageHandler {
     @RequestMapping(value = "importSupplier", method = RequestMethod.POST)
     public
     @ResponseBody
-    Map<String, Object> importSupplier(@RequestParam("file") MultipartFile file) {
+    Map<String, Object> importSupplier(@RequestParam("file") MultipartFile file) throws SupplierManageServiceException {
         // 初始化 Response
         Response responseContent = responseUtil.newResponseInstance();
         String result = Response.RESPONSE_RESULT_SUCCESS;

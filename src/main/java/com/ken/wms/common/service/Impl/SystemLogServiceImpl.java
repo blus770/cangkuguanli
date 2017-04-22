@@ -11,6 +11,7 @@ import com.ken.wms.domain.UserOperationRecordDO;
 import com.ken.wms.domain.UserOperationRecordDTO;
 import com.ken.wms.exception.SystemLogServiceException;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -103,8 +104,10 @@ public class SystemLogServiceImpl implements SystemLogService {
         try {
             if (StringUtils.isNotEmpty(startDateStr))
                 startDate = dateFormatSimple.parse(startDateStr);
-            if (StringUtils.isNotEmpty(endDateStr))
+            if (StringUtils.isNotEmpty(endDateStr)) {
                 endDate = dateFormatSimple.parse(endDateStr);
+                endDate = DateUtils.addDays(endDate, 1);
+            }
 
         } catch (ParseException e) {
             throw new SystemLogServiceException(e, "Fail to convert string to Date Object");
@@ -204,11 +207,11 @@ public class SystemLogServiceImpl implements SystemLogService {
         Map<String, Object> resultSet = new HashMap<>();
         List<UserOperationRecordDTO> userOperationRecordDTOS = new ArrayList<>();
         long total = 0;
-        boolean isPaginarion = true;
+        boolean isPagination = true;
 
         // 检查是否需要分页
         if (offset < 0 && limit < 0)
-            isPaginarion = false;
+            isPagination = false;
 
         // Date 转换
         Date startDate = null;
@@ -216,8 +219,10 @@ public class SystemLogServiceImpl implements SystemLogService {
         try {
             if (StringUtils.isNotEmpty(startDateStr))
                 startDate = dateFormatSimple.parse(startDateStr);
-            if (StringUtils.isNotEmpty(endDateStr))
+            if (StringUtils.isNotEmpty(endDateStr)) {
                 endDate = dateFormatSimple.parse(endDateStr);
+                endDate = DateUtils.addDays(endDate, 1);
+            }
         } catch (ParseException e) {
             throw new SystemLogServiceException(e, "Fail to convert String format date to Date Object");
         }
@@ -225,7 +230,7 @@ public class SystemLogServiceImpl implements SystemLogService {
         // 执行查询操作
         List<UserOperationRecordDO> userOperationRecordDOS;
         try {
-            if (isPaginarion) {
+            if (isPagination) {
                 PageHelper.offsetPage(offset, limit);
                 userOperationRecordDOS = userOperationRecordMapper.selectUserOperationRecord(userID, startDate, endDate);
                 if (userOperationRecordDOS != null) {

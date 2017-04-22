@@ -4,7 +4,8 @@ package com.ken.wms.common.service.Impl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.ken.wms.common.service.Interface.GoodsManageService;
-import com.ken.wms.common.util.ExcelUtil;
+import com.ken.wms.common.util.EJConvertor;
+import com.ken.wms.common.util.FileUtil;
 import com.ken.wms.dao.GoodsMapper;
 import com.ken.wms.dao.StockInMapper;
 import com.ken.wms.dao.StockOutMapper;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -43,7 +45,7 @@ public class GoodsManageServiceImpl implements GoodsManageService {
     @Autowired
     private StorageMapper storageMapper;
     @Autowired
-    private ExcelUtil excelUtil;
+    private EJConvertor ejConvertor;
 
     /**
      * 返回指定goods ID 的货物记录
@@ -302,28 +304,26 @@ public class GoodsManageServiceImpl implements GoodsManageService {
         int available = 0;
 
         // 从 Excel 文件中读取
-        List<Object> goodsList = excelUtil.excelReader(Goods.class, file);
-        if (goodsList != null) {
-            total = goodsList.size();
+        try {
+            List<Goods> goodsList = ejConvertor.excelReader(Goods.class, FileUtil.convertMultipartFileToFile(file));
+            if (goodsList != null) {
+                total = goodsList.size();
 
-            // 验证每一条记录
-            Goods goods;
-            List<Goods> availableList = new ArrayList<>();
-            for (Object object : goodsList) {
-                goods = (Goods) object;
-                if (goodsCheck(goods)) {
-                    availableList.add(goods);
+                // 验证每一条记录
+                List<Goods> availableList = new ArrayList<>();
+                for (Goods goods : goodsList) {
+                    if (goodsCheck(goods)) {
+                        availableList.add(goods);
+                    }
                 }
-            }
-            // 保存到数据库
-            try {
+                // 保存到数据库
                 available = availableList.size();
                 if (available > 0) {
                     goodsMapper.insertBatch(availableList);
                 }
-            } catch (PersistenceException e) {
-                throw new GoodsManageServiceException(e);
             }
+        } catch (PersistenceException | IOException e) {
+            throw new GoodsManageServiceException(e);
         }
 
         resultSet.put("total", total);
@@ -343,7 +343,7 @@ public class GoodsManageServiceImpl implements GoodsManageService {
         if (goods == null)
             return null;
 
-        return excelUtil.excelWriter(Goods.class, goods);
+        return ejConvertor.excelWriter(Goods.class, goods);
     }
 
 }

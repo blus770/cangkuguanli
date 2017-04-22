@@ -3,7 +3,8 @@ package com.ken.wms.common.service.Impl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.ken.wms.common.service.Interface.StorageManageService;
-import com.ken.wms.common.util.ExcelUtil;
+import com.ken.wms.common.util.EJConvertor;
+import com.ken.wms.common.util.FileUtil;
 import com.ken.wms.dao.GoodsMapper;
 import com.ken.wms.dao.RepositoryMapper;
 import com.ken.wms.dao.StorageMapper;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,7 +40,7 @@ public class StorageManageServiceImpl implements StorageManageService {
     @Autowired
     private RepositoryMapper repositoryMapper;
     @Autowired
-    private ExcelUtil excelUtil;
+    private EJConvertor ejConvertor;
 
     /**
      * 返回所有的库存记录
@@ -383,19 +385,17 @@ public class StorageManageServiceImpl implements StorageManageService {
         int available = 0;
 
         // 从文件中读取
-        List<Object> storageList = excelUtil.excelReader(Storage.class, file);
-        if (storageList != null) {
-            total = storageList.size();
+        try {
+            List<Storage> storageList = ejConvertor.excelReader(Storage.class, FileUtil.convertMultipartFileToFile(file));
+            if (storageList != null) {
+                total = storageList.size();
 
-            try {
-                Storage storage;
                 boolean isAvailable;
                 List<Storage> availableList = new ArrayList<>();
                 Goods goods;
                 Repository repository;
-                for (Object object : storageList) {
+                for (Storage storage : storageList) {
                     isAvailable = true;
-                    storage = (Storage) object;
 
                     // validate
                     goods = goodsMapper.selectById(storage.getGoodsID());
@@ -419,9 +419,9 @@ public class StorageManageServiceImpl implements StorageManageService {
                 System.out.println(available);
                 if (available > 0)
                     storageMapper.insertBatch(availableList);
-            } catch (PersistenceException e) {
-                throw new StorageManageServiceException(e);
             }
+        } catch (PersistenceException | IOException e) {
+            throw new StorageManageServiceException(e);
         }
 
         resultSet.put("total", total);
@@ -440,7 +440,7 @@ public class StorageManageServiceImpl implements StorageManageService {
     public File exportStorage(List<Storage> storageList) {
         if (storageList == null)
             return null;
-        return excelUtil.excelWriter(Storage.class, storageList);
+        return ejConvertor.excelWriter(Storage.class, storageList);
     }
 
     /**

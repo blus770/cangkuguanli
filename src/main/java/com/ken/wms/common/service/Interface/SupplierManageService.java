@@ -90,7 +90,7 @@ public interface SupplierManageService {
      * @param file 导入信息的文件
      * @return 返回一个Map，其中：key为total代表导入的总记录数，key为available代表有效导入的记录数
      */
-    Map<String, Object> importSupplier(MultipartFile file);
+    Map<String, Object> importSupplier(MultipartFile file) throws SupplierManageServiceException;
 
     /**
      * 导出供应商信息到文件中

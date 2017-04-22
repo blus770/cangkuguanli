@@ -4,7 +4,8 @@ package com.ken.wms.common.service.Impl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.ken.wms.common.service.Interface.CustomerManageService;
-import com.ken.wms.common.util.ExcelUtil;
+import com.ken.wms.common.util.EJConvertor;
+import com.ken.wms.common.util.FileUtil;
 import com.ken.wms.dao.CustomerMapper;
 import com.ken.wms.dao.StockOutMapper;
 import com.ken.wms.domain.Customer;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,9 +35,9 @@ public class CustomerManageServiceImpl implements CustomerManageService {
     @Autowired
     private CustomerMapper customerMapper;
     @Autowired
-    private ExcelUtil excelUtil;
-    @Autowired
     private StockOutMapper stockOutMapper;
+    @Autowired
+    private EJConvertor ejConvertor;
 
     /**
      * 返回指定customer id 的客户记录
@@ -290,16 +292,14 @@ public class CustomerManageServiceImpl implements CustomerManageService {
         int available = 0;
 
         // 从 Excel 文件中读取
-        List<Object> customers = excelUtil.excelReader(Customer.class, file);
-        if (customers != null) {
-            total = customers.size();
+        try {
+            List<Customer> customers = ejConvertor.excelReader(Customer.class, FileUtil.convertMultipartFileToFile(file));
+            if (customers != null) {
+                total = customers.size();
 
-            // 验证每一条记录
-            try {
-                Customer customer;
+                // 验证每一条记录
                 List<Customer> availableList = new ArrayList<>();
-                for (Object object : customers) {
-                    customer = (Customer) object;
+                for (Customer customer : customers) {
                     if (customerCheck(customer)) {
                         if (customerMapper.selectByName(customer.getName()) == null)
                             availableList.add(customer);
@@ -311,9 +311,9 @@ public class CustomerManageServiceImpl implements CustomerManageService {
                 if (available > 0) {
                     customerMapper.insertBatch(availableList);
                 }
-            } catch (PersistenceException e) {
-                throw new CustomerManageServiceException(e);
             }
+        } catch (PersistenceException | IOException e) {
+            throw new CustomerManageServiceException(e);
         }
 
         result.put("total", total);
@@ -333,7 +333,7 @@ public class CustomerManageServiceImpl implements CustomerManageService {
         if (customers == null)
             return null;
 
-        return excelUtil.excelWriter(Customer.class, customers);
+        return ejConvertor.excelWriter(Customer.class, customers);
     }
 
 }

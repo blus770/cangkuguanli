@@ -3,7 +3,8 @@ package com.ken.wms.common.service.Impl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.ken.wms.common.service.Interface.RepositoryAdminManageService;
-import com.ken.wms.common.util.ExcelUtil;
+import com.ken.wms.common.util.EJConvertor;
+import com.ken.wms.common.util.FileUtil;
 import com.ken.wms.dao.RepositoryAdminMapper;
 import com.ken.wms.domain.RepositoryAdmin;
 import com.ken.wms.domain.UserInfoDTO;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -30,7 +32,7 @@ public class RepositoryAdminManageServiceImpl implements RepositoryAdminManageSe
     @Autowired
     private RepositoryAdminMapper repositoryAdminMapper;
     @Autowired
-    private ExcelUtil excelUtil;
+    private EJConvertor ejConvertor;
     @Autowired
     private UserInfoService userInfoService;
 
@@ -314,28 +316,26 @@ public class RepositoryAdminManageServiceImpl implements RepositoryAdminManageSe
         long available = 0;
 
         // 从文件中读取
-        List<Object> repositoryAdmins = excelUtil.excelReader(RepositoryAdmin.class, file);
+        try {
+            List<RepositoryAdmin> repositoryAdmins = ejConvertor.excelReader(RepositoryAdmin.class, FileUtil.convertMultipartFileToFile(file));
 
-        if (repositoryAdmins != null) {
-            total = repositoryAdmins.size();
+            if (repositoryAdmins != null) {
+                total = repositoryAdmins.size();
 
-            // 验证记录
-            RepositoryAdmin repositoryAdmin;
-            List<RepositoryAdmin> availableList = new ArrayList<>();
-            for (Object object : repositoryAdmins) {
-                repositoryAdmin = (RepositoryAdmin) object;
-                if (repositoryAdminCheck(repositoryAdmin))
-                    availableList.add(repositoryAdmin);
-            }
+                // 验证记录
+                List<RepositoryAdmin> availableList = new ArrayList<>();
+                for (RepositoryAdmin repositoryAdmin : repositoryAdmins) {
+                    if (repositoryAdminCheck(repositoryAdmin))
+                        availableList.add(repositoryAdmin);
+                }
 
-            try {
                 // 保存到数据库
                 available = availableList.size();
                 if (available > 0)
                     repositoryAdminMapper.insertBatch(availableList);
-            } catch (PersistenceException e) {
-                throw new RepositoryAdminManageServiceException(e);
             }
+        } catch (PersistenceException | IOException e) {
+            throw new RepositoryAdminManageServiceException(e);
         }
 
         resultSet.put("total", total);
@@ -355,7 +355,7 @@ public class RepositoryAdminManageServiceImpl implements RepositoryAdminManageSe
         File file = null;
 
         if (repositoryAdmins != null) {
-            file = excelUtil.excelWriter(RepositoryAdmin.class, repositoryAdmins);
+            file = ejConvertor.excelWriter(RepositoryAdmin.class, repositoryAdmins);
         }
 
         return file;

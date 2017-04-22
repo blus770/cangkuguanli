@@ -28,8 +28,8 @@
     <!-- ============================================
                 ExcelUtil 配置
          ============================================-->
-    <bean id="ExcelUtil" class="com.ken.wms.common.util.ExcelUtil">
-        <constructor-arg type="java.lang.String" value="config/ExcelUtilConfig.xml"/>
+    <bean id="EJConvertor" class="com.ken.wms.common.util.EJConvertor">
+        <constructor-arg type="java.lang.String" value="config/EJConvertorConfig.xml"/>
     </bean>
 
 

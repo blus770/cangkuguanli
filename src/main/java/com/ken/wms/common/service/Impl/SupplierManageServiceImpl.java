@@ -3,7 +3,8 @@ package com.ken.wms.common.service.Impl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.ken.wms.common.service.Interface.SupplierManageService;
-import com.ken.wms.common.util.ExcelUtil;
+import com.ken.wms.common.util.EJConvertor;
+import com.ken.wms.common.util.FileUtil;
 import com.ken.wms.dao.StockInMapper;
 import com.ken.wms.dao.SupplierMapper;
 import com.ken.wms.domain.StockInDO;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,7 +36,7 @@ public class SupplierManageServiceImpl implements SupplierManageService {
     @Autowired
     private StockInMapper stockInMapper;
     @Autowired
-    private ExcelUtil excelUtil;
+    private EJConvertor ejConvertor;
 
     /**
      * 返回指定supplierID 的供应商记录
@@ -278,34 +280,36 @@ public class SupplierManageServiceImpl implements SupplierManageService {
      */
     @UserOperation(value = "导入供应商信息")
     @Override
-    public Map<String, Object> importSupplier(MultipartFile file) {
+    public Map<String, Object> importSupplier(MultipartFile file) throws SupplierManageServiceException {
         // 初始化结果集
         Map<String, Object> result = new HashMap<>();
         int total = 0;
         int available = 0;
 
         // 从 Excel 文件中读取
-        List<Object> suppliers = excelUtil.excelReader(Supplier.class, file);
-        if (suppliers != null) {
-            total = suppliers.size();
+        try {
+            List<Supplier> suppliers = ejConvertor.excelReader(Supplier.class, FileUtil.convertMultipartFileToFile(file));
+            if (suppliers != null) {
+                total = suppliers.size();
 
-            // 验证每一条供应商记录
-            Supplier supplier;
-            List<Supplier> availableList = new ArrayList<>();
-            for (Object object : suppliers) {
-                supplier = (Supplier) object;
-                if (supplierCheck(supplier)) {
-                    // 检查重名
-                    if (null == supplierMapper.selectBuName(supplier.getName()))
-                        availableList.add(supplier);
+                // 验证每一条供应商记录
+                List<Supplier> availableList = new ArrayList<>();
+                for (Supplier supplier : suppliers) {
+                    if (supplierCheck(supplier)) {
+                        // 检查重名
+                        if (null == supplierMapper.selectBuName(supplier.getName()))
+                            availableList.add(supplier);
+                    }
+                }
+
+                // 保存到数据库
+                available = availableList.size();
+                if (available > 0) {
+                    supplierMapper.insertBatch(availableList);
                 }
             }
-
-            // 保存到数据库
-            available = availableList.size();
-            if (available > 0) {
-                supplierMapper.insertBatch(availableList);
-            }
+        } catch (IOException | PersistenceException e) {
+            throw new SupplierManageServiceException(e);
         }
 
         result.put("total", total);
@@ -325,6 +329,6 @@ public class SupplierManageServiceImpl implements SupplierManageService {
         if (suppliers == null)
             return null;
 
-        return excelUtil.excelWriter(Supplier.class, suppliers);
+        return ejConvertor.excelWriter(Supplier.class, suppliers);
     }
 }

@@ -1,15 +1,15 @@
-<!--<%@ page language="java" contentType="text/html; charset=UTF-8"-->
-<!--pageEncoding="UTF-8"%>-->
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <script>
     // 查询参数
+    search_access_type = 'all'
     search_user_id = null
     search_start_date = null
     search_end_date = null
 
     $(function(){
         datePickerInit();
-        userOperationRecordTableInit();
+        accessRecordTableInit();
         searchActionInit();
     })
 
@@ -30,8 +30,8 @@
 	}
 
 	// 表格初始化
-	function userOperationRecordTableInit(){
-	    $('#userOperationRecordTable').bootstrapTable({
+	function accessRecordTableInit(){
+	    $('#accessRecordDOS').bootstrapTable({
 	        columns:[{
 	            field : 'id',
 	            title : '记录ID'
@@ -42,16 +42,16 @@
 	            field : 'userName',
 	            title : '用户名'
 	        },{
-	            field : 'operationName',
-	            title : '操作'
-	        },{
-	            field : 'operationTime',
+	            field : 'accessTime',
 	            title : '时间'
 	        },{
-	            field : 'operationResult',
-	            title : '操作结果'
+	            field : 'accessIP',
+	            title : 'IP'
+	        },{
+	            field : 'accessType',
+	            title : '类型'
 	        }],
-	        url : 'systemLog/getUserOperationRecords',
+	        url : 'systemLog/getAccessRecords',
 	        method : 'GET',
 	        queryParams : queryParams,
             sidePagination : "server",
@@ -66,7 +66,7 @@
 
 	// 表格刷新
 	function tableRefresh() {
-		$('#userOperationRecordTable').bootstrapTable('refresh', {
+		$('#accessRecordDOS').bootstrapTable('refresh', {
 			query : {}
 		});
 	}
@@ -77,6 +77,7 @@
 			limit : params.limit,
 			offset : params.offset,
 			userID : search_user_id,
+			accessType : search_access_type,
 			startDate : search_start_date,
 			endDate : search_end_date
 		}
@@ -87,6 +88,7 @@
     function searchActionInit(){
         $('#search_button').click(function(){
             search_user_id = $('#user_id').val();
+            search_access_type = $('#access_type').val();
             search_start_date = $('#start_date').val();
             search_end_date = $('#end_date').val();
             tableRefresh();
@@ -96,7 +98,7 @@
 
 <div class="panel panel-default">
     <ol class="breadcrumb">
-        <li>系统日志</li>
+        <li>系统登陆日志</li>
     </ol>
     <div class="panel-body">
         <div class="row">
@@ -108,12 +110,14 @@
                     </div>
                 </form>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-3">
                 <form action="" class="form-inline">
-                    <label class="form-label">日期范围：</label>
-                    <input class="form_date form-control" id="start_date" placeholder="起始日期">
-                    <label class="form-label">&nbsp;&nbsp;-&nbsp;&nbsp;</label>
-                    <input class="form_date form-control" id="end_date" placeholder="结束日期">
+                    <label class="form-label">记录过滤：</label>
+                    <select name="" id="access_type" class="form-control">
+                        <option value="all">显示所有</option>
+                        <option value="loginOnly">仅显示登入记录</option>
+                        <option value="logoutOnly">仅显示登出记录</option>
+                    </select>
                 </form>
             </div>
             <div class="col-md-2">
@@ -122,9 +126,19 @@
                 </button>
             </div>
         </div>
+        <div class="row" style="margin-top:20px">
+            <div class="col-md-6">
+                <form action="" class="form-inline">
+                    <label class="form-label">日期范围：</label>
+                    <input class="form_date form-control" id="start_date" placeholder="起始日期">
+                    <label class="form-label">&nbsp;&nbsp;-&nbsp;&nbsp;</label>
+                    <input class="form_date form-control" id="end_date" placeholder="结束日期">
+                </form>
+            </div>
+        </div>
         <div class="row" style="margin-top:25px">
             <div class="col-md-12">
-                <table class="table table-striped" id="userOperationRecordTable"></table>
+                <table class="table table-striped" id="accessRecordDOS"></table>
             </div>
         </div>
     </div>

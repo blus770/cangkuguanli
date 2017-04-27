@@ -165,18 +165,6 @@
 		})
 	}
 
-	// 操作结果提示模态框
-	function infoModal(type, msg) {
-		$('#info_success').removeClass("hide");
-		$('#info_error').removeClass("hide");
-		if (type == "success") {
-			$('#info_error').addClass("hide");
-		} else if (type == "error") {
-			$('#info_success').addClass("hide");
-		}
-		$('#info_content').text(msg);
-		$('#info_modal').modal("show");
-	}
 </script>
 <div class="panel panel-default">
 	<ol class="breadcrumb">
@@ -274,7 +262,7 @@
 			<div class="modal-header">
 				<button class="close" type="button" data-dismiss="modal"
 					aria-hidden="true">&times;</button>
-				<h4 class="modal-title" id="myModalLabel">编辑货物信息</h4>
+				<h4 class="modal-title" id="myModalLabel">详细货物信息</h4>
 			</div>
 			<div class="modal-body">
 				<!-- 模态框的内容 -->

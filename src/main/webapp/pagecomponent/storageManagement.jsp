@@ -67,6 +67,7 @@
 				})
 			},
 			error : function(response){
+				// do nothing
 			}
 		});
 		$('#search_input_repository').append("<option value='all'>所有仓库</option>");
@@ -250,6 +251,7 @@
 							$('#edit_modal').modal("hide");
 							var type;
 							var msg;
+							var append = '';
 							if (response.result == "success") {
 								type = "success";
 								msg = "库存信息更新成功";
@@ -257,10 +259,13 @@
 								type = "error";
 								msg = "库存信息更新失败"
 							}
-							infoModal(type, msg);
+							showMsg(type, msg, append);
 							tableRefresh();
 						},
-						error : function(response) {
+						error : function(xhr, textStatus, errorThrown) {
+							$('#edit_modal').modal("hide");
+							// handle error
+							handleAjaxError(xhr.status);
 						}
 					});
 				});
@@ -285,6 +290,7 @@
 					$('#deleteWarning_modal').modal("hide");
 					var type;
 					var msg;
+					var append = '';
 					if(response.result == "success"){
 						type = "success";
 						msg = "库存信息删除成功";
@@ -292,9 +298,12 @@
 						type = "error";
 						msg = "库存信息删除失败";
 					}
-					infoModal(type, msg);
+					showMsg(type, msg, append);
 					tableRefresh();
-				},error : function(response){
+				},error : function(xhr, textStatus, errorThrown){
+					$('#deleteWarning_modal').modal("hide");
+					// handle error
+					handleAjaxError(xhr.status);
 				}
 			})
 			
@@ -325,6 +334,7 @@
 					$('#add_modal').modal("hide");
 					var msg;
 					var type;
+					var append = '';
 					if (response.result == "success") {
 						type = "success";
 						msg = "库存信息添加成功";
@@ -332,7 +342,7 @@
 						type = "error";
 						msg = "库存信息添加失败";
 					}
-					infoModal(type, msg);
+					showMsg(type, msg, append);
 					tableRefresh();
 
 					// reset
@@ -341,7 +351,10 @@
 					$('#storage_number').val("");
 					$('#storage_form').bootstrapValidator("resetForm", true);
 				},
-				error : function(response) {
+				error : function(xhr, textStatus, errorThrown) {
+					$('#add_modal').modal("hide");
+					// handle error
+					handleAjaxError(xhr.status);
 				}
 			})
 		})
@@ -420,7 +433,10 @@
 					$('#import_result').removeClass('hide');
 					$('#import_info').text(info);
 					$('#confirm').removeClass('disabled');
-				},error : function(data, status){
+				},
+				error : function(data, status){
+					// handle error
+					handleAjaxError(status);
 				}
 			})
 		})
@@ -480,10 +496,6 @@
 		$('#submit').addClass("hide");
 		$('#confirm').addClass("hide");
 
-		//$('#file').wrap('<form>').closest('form').get(0).reset();
-		//$('#file').unwrap();
-		//var control = $('#file');
-		//control.replaceWith( control = control.clone( true ) );
 		$('#file').on("change", function() {
 			$('#previous').addClass("hide");
 			$('#next').addClass("hide");
@@ -492,19 +504,7 @@
 		
 		import_step = 1;
 	}
-	
-	// 操作结果提示模态框
-	function infoModal(type, msg) {
-		$('#info_success').removeClass("hide");
-		$('#info_error').removeClass("hide");
-		if (type == "success") {
-			$('#info_error').addClass("hide");
-		} else if (type == "error") {
-			$('#info_success').addClass("hide");
-		}
-		$('#info_content').text(msg);
-		$('#info_modal').modal("show");
-	}
+
 </script>
 <div class="panel panel-default">
 	<ol class="breadcrumb">
@@ -701,11 +701,6 @@
 									<span class="sr-only">请稍后...</span>
 								</div>
 							</div>
-							<!-- 
-							<div style="text-align: center">
-								<h4 id="import_info"></h4>
-							</div>
-							 -->
 						</div>
 						<div class="col-md-1 col-sm-1"></div>
 					</div>
@@ -782,48 +777,6 @@
 				</button>
 				<button class="btn btn-success" type="button" id="export_storage_download">
 					<span>确认下载</span>
-				</button>
-			</div>
-		</div>
-	</div>
-</div>
-
-<!-- 提示消息模态框 -->
-<div class="modal fade" id="info_modal" table-index="-1" role="dialog"
-	aria-labelledby="myModalLabel" aria-hidden="true">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button class="close" type="button" data-dismiss="modal"
-					aria-hidden="true">&times;</button>
-				<h4 class="modal-title" id="myModalLabel">信息</h4>
-			</div>
-			<div class="modal-body">
-				<div class="row">
-					<div class="col-md-4 col-sm-4"></div>
-					<div class="col-md-4 col-sm-4">
-						<div id="info_success" class=" hide" style="text-align: center;">
-							<img src="media/icons/success-icon.png" alt=""
-								style="width: 100px; height: 100px;">
-						</div>
-						<div id="info_error" style="text-align: center;">
-							<img src="media/icons/error-icon.png" alt=""
-								style="width: 100px; height: 100px;">
-						</div>
-					</div>
-					<div class="col-md-4 col-sm-4"></div>
-				</div>
-				<div class="row" style="margin-top: 10px">
-					<div class="col-md-4 col-sm-4"></div>
-					<div class="col-md-4 col-sm-4" style="text-align: center;">
-						<h4 id="info_content"></h4>
-					</div>
-					<div class="col-md-4 col-sm-4"></div>
-				</div>
-			</div>
-			<div class="modal-footer">
-				<button class="btn btn-default" type="button" data-dismiss="modal">
-					<span>&nbsp;&nbsp;&nbsp;关闭&nbsp;&nbsp;&nbsp;</span>
 				</button>
 			</div>
 		</div>

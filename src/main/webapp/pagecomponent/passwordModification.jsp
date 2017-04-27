@@ -98,15 +98,15 @@
 						bv.updateStatus(field,'INVALID','callback');
 					}else{
 						// 否则更新成功，弹出模态框并清空表单
-						$('#passwordEditSuccess').modal('show');
+						showMsg('success', '密码修改成功', '')
 						$('#reset').trigger("click");
 						$('#form').bootstrapValidator("resetForm",true); 
 					}
 					
 				},
-				error:function(response){
-					//window.location.href = "./";
-					location.reload();
+				error:function(xhr, textStatus, errorThrown){
+					// handler error
+					handleAjaxError(xhr.status);
 				}
 			});
 		})
@@ -192,47 +192,6 @@
 				</div>
 			</div>
 			<div class="col-md-3 col-sm-1"></div>
-		</div>
-	</div>
-</div>
-
-<!-- 更新成功模态框 -->
-<div class="modal fade" id="passwordEditSuccess"
-	tabindex="-1" role="dialog"
-	aria-labelledby="myModalLabel" aria-hidden="true">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close"
-					data-dismiss="modal" aria-hidden="true">
-					&times;
-				</button>
-				<h4 class="modal-title" id="myModalLabel">
-					提示
-				</h4>
-			</div>
-			<div class="modal-body">
-				<div class="row">
-					<div class="col-md-4"></div>
-					<div class="col-md-4">
-						<div style="text-align: center;">
-							<img src="media/icons/success-icon.png" alt=""
-								style="width: 100px; height: 100px;">
-						</div>
-					</div>
-					<div class="col-md-4"></div>
-				</div>
-				<div class="row" style="margin-top: 10px">
-					<div class="col-md-4"></div>
-					<div class="col-md-4" style="text-align:center;"><h4>密码修改成功</h4></div>
-					<div class="col-md-4"></div>
-				</div>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-default" data-dismiss="modal">
-					<span>关闭</span>
-				</button>
-			</div>
 		</div>
 	</div>
 </div>

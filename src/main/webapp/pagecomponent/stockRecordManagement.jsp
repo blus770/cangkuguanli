@@ -1,5 +1,4 @@
-<!--<%@ page language="java" contentType="text/html; charset=UTF-8"-->
-<!--pageEncoding="UTF-8"%>-->
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <script>
     // 出入库记录查询参数
@@ -34,9 +33,9 @@
 				})
 			},
 			error : function(response){
+				// do nothing 
 			}
 		});
-		//$('#search_repository_ID').append("<option value='all'>所有仓库</option>");
 	}
 
 	// 日期选择器初始化

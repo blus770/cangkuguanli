@@ -216,6 +216,7 @@
 							$('#edit_modal').modal("hide");
 							var type;
 							var msg;
+							var append = '';
 							if (response.result == "success") {
 								type = "success";
 								msg = "仓库信息更新成功";
@@ -223,10 +224,13 @@
 								type = "error";
 								msg = "仓库信息更新失败"
 							}
-							infoModal(type, msg);
+							showMsg(type, msg, append);
 							tableRefresh();
 						},
-						error : function(response) {
+						error : function(xhr, textStatus, errorThrown) {
+							$('#edit_modal').modal("hide");
+							// handler error
+							handleAjaxError(xhr.status);
 						}
 					});
 				});
@@ -250,6 +254,7 @@
 					$('#deleteWarning_modal').modal("hide");
 					var type;
 					var msg;
+					var append = '';
 					if (response.result == "success") {
 						type = "success";
 						msg = "仓库信息删除成功";
@@ -257,10 +262,13 @@
 						type = "error";
 						msg = "仓库信息删除失败";
 					}
-					infoModal(type, msg);
+					showMsg(type, msg, append);
 					tableRefresh();
 				},
-				error : function(response) {
+				error : function(xhr, textStatus, errorThrown) {
+					$('#deleteWarning_modal').modal("hide");
+					// handler error
+					handleAjaxError(xhr.status);
 				}
 			})
 
@@ -292,6 +300,7 @@
 					$('#add_modal').modal("hide");
 					var msg;
 					var type;
+					var append = '';
 					if (response.result == "success") {
 						type = "success";
 						msg = "仓库添加成功";
@@ -299,7 +308,7 @@
 						type = "error";
 						msg = "仓库添加失败";
 					}
-					infoModal(type, msg);
+					showMsg(type, msg, append);
 					tableRefresh();
 
 					// reset
@@ -309,7 +318,10 @@
 					$('#repository_desc').val("");
 					$('#repository_form').bootstrapValidator("resetForm", true);
 				},
-				error : function(response) {
+				error : function(xhr, textStatus, errorThrown) {
+					$('#add_modal').modal("hide");
+					// handler error
+					handleAjaxError(xhr.status);
 				}
 			})
 		})
@@ -390,6 +402,8 @@
 					$('#confirm').removeClass('disabled');
 				},
 				error : function(data, status) {
+					// handler error
+					handleAjaxError(status);
 				}
 			})
 		})
@@ -457,19 +471,6 @@
 		})
 
 		import_step = 1;
-	}
-
-	// 操作结果提示模态框
-	function infoModal(type, msg) {
-		$('#info_success').removeClass("hide");
-		$('#info_error').removeClass("hide");
-		if (type == "success") {
-			$('#info_error').addClass("hide");
-		} else if (type == "error") {
-			$('#info_success').addClass("hide");
-		}
-		$('#info_content').text(msg);
-		$('#info_modal').modal("show");
 	}
 </script>
 
@@ -751,48 +752,6 @@
 				<button class="btn btn-success" type="button"
 					id="export_repository_download">
 					<span>确认下载</span>
-				</button>
-			</div>
-		</div>
-	</div>
-</div>
-
-<!-- 提示消息模态框 -->
-<div class="modal fade" id="info_modal" table-index="-1" role="dialog"
-	aria-labelledby="myModalLabel" aria-hidden="true">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button class="close" type="button" data-dismiss="modal"
-					aria-hidden="true">&times;</button>
-				<h4 class="modal-title" id="myModalLabel">信息</h4>
-			</div>
-			<div class="modal-body">
-				<div class="row">
-					<div class="col-md-4 col-sm-4"></div>
-					<div class="col-md-4 col-sm-4">
-						<div id="info_success" class=" hide" style="text-align: center;">
-							<img src="media/icons/success-icon.png" alt=""
-								style="width: 100px; height: 100px;">
-						</div>
-						<div id="info_error" style="text-align: center;">
-							<img src="media/icons/error-icon.png" alt=""
-								style="width: 100px; height: 100px;">
-						</div>
-					</div>
-					<div class="col-md-4 col-sm-4"></div>
-				</div>
-				<div class="row" style="margin-top: 10px">
-					<div class="col-md-4 col-sm-4"></div>
-					<div class="col-md-4 col-sm-4" style="text-align: center;">
-						<h4 id="info_content"></h4>
-					</div>
-					<div class="col-md-4 col-sm-4"></div>
-				</div>
-			</div>
-			<div class="modal-footer">
-				<button class="btn btn-default" type="button" data-dismiss="modal">
-					<span>&nbsp;&nbsp;&nbsp;关闭&nbsp;&nbsp;&nbsp;</span>
 				</button>
 			</div>
 		</div>

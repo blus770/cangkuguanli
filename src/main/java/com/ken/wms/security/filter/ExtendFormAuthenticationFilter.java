@@ -55,7 +55,6 @@ public class ExtendFormAuthenticationFilter extends FormAuthenticationFilter {
             httpServletResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return false;
         }
-
     }
 
     @Override

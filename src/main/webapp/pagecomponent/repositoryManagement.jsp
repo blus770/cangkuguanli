@@ -119,6 +119,9 @@
 										}
 									} ],
 							url : 'repositoryManage/getRepositoryList',
+							onLoadError:function(status){
+								handleAjaxError(status);
+							},
 							method : 'GET',
 							queryParams : queryParams,
 							sidePagination : "server",

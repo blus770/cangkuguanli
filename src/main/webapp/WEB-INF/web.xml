@@ -51,7 +51,7 @@
     <!-- needed for ContextLoaderListener -->
     <context-param>
         <param-name>contextConfigLocation</param-name>
-        <param-value>classpath:config/SpringApplicationConfiguration.xml</param-value>
+        <param-value>classpath:config/SpringContextConfiguration.xml</param-value>
     </context-param>
 
     <!-- Bootstraps the root web application context before servlet initialization -->

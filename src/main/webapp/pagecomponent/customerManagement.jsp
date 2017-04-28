@@ -119,6 +119,9 @@
 										}
 									} ],
 							url : 'customerManage/getCustomerList',
+							onLoadError:function(status){
+								handleAjaxError(status);
+							},
 							method : 'GET',
 							queryParams : queryParams,
 							sidePagination : "server",

@@ -21,8 +21,9 @@
                                 expression="org.springframework.web.bind.annotation.ControllerAdvice"/>
     </context:component-scan>
 
-    <!-- 启动@AspectJ支持 -->
-    <!--<aop:aspectj-autoproxy/>-->
+
+    <!-- 导入 shiro 配置 -->
+    <import resource="classpath:config/ShiroConfiguration.xml"/>
 
 
     <!-- ============================================
@@ -31,67 +32,6 @@
     <bean id="EJConvertor" class="com.ken.wms.common.util.EJConvertor">
         <constructor-arg type="java.lang.String" value="config/EJConvertorConfig.xml"/>
     </bean>
-
-
-    <!-- ============================================
-               Shiro 核心组件 配置
-        ============================================-->
-    <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
-        <property name="cacheManager" ref="cacheManager"/>
-        <property name="authenticator" ref="authenticator"/>
-        <property name="realms">
-            <list>
-                <ref bean="userAuthorizingRealm"/>
-            </list>
-        </property>
-    </bean>
-    <bean id="authenticator" class="org.apache.shiro.authc.pam.ModularRealmAuthenticator">
-        <property name="authenticationStrategy">
-            <bean class="org.apache.shiro.authc.pam.AtLeastOneSuccessfulStrategy"/>
-        </property>
-    </bean>
-    <bean id="cacheManager" class="org.apache.shiro.cache.ehcache.EhCacheManager">
-        <property name="cacheManagerConfigFile" value="classpath:config/ehcache.xml"/>
-    </bean>
-    <!-- Realm 的配置 -->
-    <bean id="userAuthorizingRealm" class="com.ken.wms.security.realms.UserAuthorizingRealm"/>
-
-
-    <!-- ============================================
-               Shiro - Spring 整合 配置
-        ============================================-->
-    <bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor"/>
-    <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"
-          depends-on="lifecycleBeanPostProcessor"/>
-    <bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
-        <property name="securityManager" ref="securityManager"/>
-    </bean>
-    <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
-        <property name="securityManager" ref="securityManager"/>
-        <property name="loginUrl" value="/login"/>
-        <property name="successUrl" value="/main"/>
-        <property name="unauthorizedUrl" value="/jsp/unauthorized.html"/>
-        <property name="filters">
-            <util:map>
-                <entry key="roles" value-ref="anyOfRoles"/>
-                <entry key="authc" value-ref="extendFormAuthenticationFilter"/>
-            </util:map>
-        </property>
-        <property name="filterChainDefinitionMap" ref="filterChainDefinitionMap"/>
-    </bean>
-    <!-- 配置身份验证器，处理 Ajax 请求 -->
-    <bean id="extendFormAuthenticationFilter" class="com.ken.wms.security.filter.ExtendFormAuthenticationFilter">
-        <property name="usernameParam" value="username"/>
-        <property name="passwordParam" value="password"/>
-        <property name="rememberMeParam" value="rememberMe"/>
-        <property name="loginUrl" value="/login"/>
-    </bean>
-    <bean id="anyOfRoles" class="com.ken.wms.security.filter.AnyOfRolesAuthorizationFilter"/>
-    <!-- 配置获取 URL 权限信息的 Factory -->
-    <bean id="filterChainDefinitionMap" factory-bean="filterChainDefinitionMapBuilder"
-          factory-method="builderFilterChainDefinitionMap"/>
-    <bean id="filterChainDefinitionMapBuilder"
-          class="com.ken.wms.security.service.FilterChainDefinitionMapBuilder"/>
 
 
     <!-- ============================================

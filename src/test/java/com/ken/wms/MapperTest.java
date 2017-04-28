@@ -25,7 +25,7 @@
 ///**
 // * Created by Ken on 2017/4/5.
 // */
-//@ContextConfiguration(locations = "classpath:config/SpringApplicationConfiguration.xml")
+//@ContextConfiguration(locations = "classpath:config/SpringContextConfiguration.xml")
 //@RunWith(SpringJUnit4ClassRunner.class)
 //public class MapperTest {
 //

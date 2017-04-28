@@ -91,4 +91,11 @@
 
     <!-- Place configuration for your caches following -->
 
+    <!-- session dao cache 配置 -->
+    <cache name="sessionCache"
+           maxElementsInMemory="10000"
+           overflowToDisk="true"
+           timeToIdleSeconds="0"
+           timeToLiveSeconds="0"/>
+
 </ehcache>

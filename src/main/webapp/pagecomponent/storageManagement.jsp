@@ -157,6 +157,9 @@
 										}
 									} ],
 							url : 'storageManage/getStorageListWithRepository',
+							onLoadError:function(status){
+								handleAjaxError(status);
+							},
 							method : 'GET',
 							queryParams : queryParams,
 							sidePagination : "server",

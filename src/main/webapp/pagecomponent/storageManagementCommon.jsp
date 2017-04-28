@@ -115,6 +115,9 @@
 										}
 									} ],
 							url : 'storageManage/getStorageList',
+							onLoadError:function(status){
+								handleAjaxError(status);
+							},
 							method : 'GET',
 							queryParams : queryParams,
 							sidePagination : "server",

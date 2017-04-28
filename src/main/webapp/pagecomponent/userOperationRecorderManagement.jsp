@@ -51,6 +51,9 @@
 	            title : '操作结果'
 	        }],
 	        url : 'systemLog/getUserOperationRecords',
+            onLoadError:function(status){
+                handleAjaxError(status);
+            },
 	        method : 'GET',
 	        queryParams : queryParams,
             sidePagination : "server",

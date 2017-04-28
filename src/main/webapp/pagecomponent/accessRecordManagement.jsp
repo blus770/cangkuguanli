@@ -52,6 +52,9 @@
 	            title : '类型'
 	        }],
 	        url : 'systemLog/getAccessRecords',
+            onLoadError:function(status){
+                handleAjaxError(status);
+            },
 	        method : 'GET',
 	        queryParams : queryParams,
             sidePagination : "server",

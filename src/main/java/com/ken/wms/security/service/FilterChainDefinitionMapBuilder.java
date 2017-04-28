@@ -30,7 +30,7 @@ public class FilterChainDefinitionMapBuilder {
         permissionMap.put("/fonts/**", "anon");
         permissionMap.put("/media/**", "anon");
         permissionMap.put("/pagecomponent/**", "anon");
-        permissionMap.put("/login", "anon");
+        permissionMap.put("/login", "anon, kickOut");
         permissionMap.put("/account/login", "anon");
         permissionMap.put("/account/checkCode/**", "anon");
 
@@ -73,7 +73,7 @@ public class FilterChainDefinitionMapBuilder {
                     builder.insert(builder.length() - 1, role);
                 }else{
                     builder.delete(0, builder.length());
-                    builder.append("authc,roles[").append(role).append("]");
+                    builder.append("authc,kickOut,roles[").append(role).append("]");
                 }
                 permission = builder.toString();
 //                System.out.println(url + ":" + permission);

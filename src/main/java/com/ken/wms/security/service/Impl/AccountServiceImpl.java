@@ -7,6 +7,9 @@ import com.ken.wms.exception.UserInfoServiceException;
 import com.ken.wms.security.service.Interface.AccountService;
 import com.ken.wms.security.service.Interface.UserInfoService;
 import com.ken.wms.security.util.EncryptingModel;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.session.Session;
+import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -71,7 +74,14 @@ public class AccountServiceImpl implements AccountService {
 
             // 验证成功后更新数据库
             user.setPassword(password);
+            user.setFirstLogin(false);
             userInfoService.updateUserInfo(user);
+
+            // 更新密码修改信息(是否为初次修改密码)
+            Subject currentSubject = SecurityUtils.getSubject();
+            Session session = currentSubject.getSession();
+            session.setAttribute("firstLogin", false);
+
         } catch (NoSuchAlgorithmException | NullPointerException | UserInfoServiceException e) {
             throw new UserAccountServiceException(UserAccountServiceException.PASSWORD_ERROR);
         }

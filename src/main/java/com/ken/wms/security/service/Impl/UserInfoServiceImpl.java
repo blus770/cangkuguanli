@@ -136,6 +136,9 @@ public class UserInfoServiceImpl implements UserInfoService {
                     userInfoDO.setUserID(userID);
                     userInfoDO.setUserName(userName);
                     userInfoDO.setPassword(password);
+                    userInfoDO.setFirstLogin(userInfoDTO.getFirstLogin() ? 1 : 0);
+
+                    // update
                     userInfoMapper.update(userInfoDO);
                 }
 
@@ -196,6 +199,7 @@ public class UserInfoServiceImpl implements UserInfoService {
             userInfoDO.setUserID(userID);
             userInfoDO.setUserName(userName);
             userInfoDO.setPassword(encryptPassword);
+            userInfoDO.setFirstLogin(1);
 
             // 持久化用户信息
             userInfoMapper.insert(userInfoDO);
@@ -234,6 +238,7 @@ public class UserInfoServiceImpl implements UserInfoService {
             userInfoDTO.setUserID(userInfoDO.getUserID());
             userInfoDTO.setUserName(userInfoDO.getUserName());
             userInfoDTO.setPassword(userInfoDO.getPassword());
+            userInfoDTO.setFirstLogin(userInfoDO.getFirstLogin() == 1);
 
             for (RoleDO role : roles) {
                 userInfoDTO.getRole().add(role.getRoleName());

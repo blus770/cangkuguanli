@@ -26,6 +26,11 @@ public class UserInfoDTO {
     private String password;
 
     /**
+     * 是否为初次登陆
+     */
+    private boolean firstLogin;
+
+    /**
      * 用户角色
      */
     private List<String> role = new ArrayList<>();
@@ -36,6 +41,14 @@ public class UserInfoDTO {
 
     public String getUserName() {
         return userName;
+    }
+
+    public boolean getFirstLogin() {
+        return firstLogin;
+    }
+
+    public void setFirstLogin(boolean firstLogin) {
+        this.firstLogin = firstLogin;
     }
 
     public List<String> getRole() {
@@ -72,6 +85,7 @@ public class UserInfoDTO {
                 "userID=" + userID +
                 ", userName='" + userName + '\'' +
                 ", password='" + password + '\'' +
+                ", firstLogin=" + firstLogin +
                 ", role=" + role +
                 '}';
     }

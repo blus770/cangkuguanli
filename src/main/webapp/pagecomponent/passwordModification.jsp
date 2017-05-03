@@ -83,10 +83,10 @@
 					// 接收并处理后端返回的响应e'd'
 					if(response.result == "error"){
 						var errorMessage;
-						if(response.errorMsg == "passwordError"){
+						if(response.msg == "passwordError"){
 							errorMessage = "密码错误";
 							field = "oldPassword"
-						}else if(response.errorMsg == "passwordUnmatched"){
+						}else if(response.msg == "passwordUnmatched"){
 							errorMessage = "密码不一致";
 							field = "newPassword"
 						}

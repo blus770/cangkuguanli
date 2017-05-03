@@ -23,11 +23,24 @@ public class UserInfoDO {
     private String password;
 
     /**
+     * 是否为初次登陆
+     */
+    private int firstLogin;
+
+    /**
      * 用户账户属性的 getter 以及 setter
      */
 
     public String getUserName() {
         return userName;
+    }
+
+    public int getFirstLogin() {
+        return firstLogin;
+    }
+
+    public void setFirstLogin(int firstLogin) {
+        this.firstLogin = firstLogin;
     }
 
     public Integer getUserID() {
@@ -56,6 +69,7 @@ public class UserInfoDO {
                 "userID=" + userID +
                 ", userName='" + userName + '\'' +
                 ", password='" + password + '\'' +
+                ", firstLogin=" + firstLogin +
                 '}';
     }
 }

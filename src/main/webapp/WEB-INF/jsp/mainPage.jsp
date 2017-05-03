@@ -333,6 +333,82 @@ pageEncoding="UTF-8"%>
     </div>
 </div>
 
+<!-- 初始密码修改框 -->
+<div class="modal fade" id="init_password_modify" table-index="-1" role="dialog"
+    aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">修改初始密码</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row" style="margin-top: 25px">
+                    <div class="col-md-1 col-sm-1"></div>
+                    <div class="col-md-10 col-sm-10">
+
+                        <form action="" class="form-horizontal" style=""
+                            role="form" id="form">
+                            <div class="form-group">
+                                <label for="" class="control-label col-md-4 col-sm-4"> 用户ID: </label>
+                                <div class="col-md-6 col-sm-6">
+                                    <span class="hidden" id="userID">${sessionScope.userID }</span>
+                                    <span class="hidden" id="isFirstLogin">${sessionScope.firstLogin}</span>
+                                    <p class="form-control-static">${sessionScope.userID }</p>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="" class="control-label col-md-4 col-sm-4"> 输入原密码: </label>
+                                <div class="col-md-6 col-sm-6">
+                                    <input type="password" class="form-control" id="oldPassword"
+                                        name="oldPassword">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="" class="control-label col-md-4 col-sm-4"> 输入新密码: </label>
+                                <div class="col-md-6 col-sm-6">
+                                    <input type="password" class="form-control" id="newPassword"
+                                        name="newPassword">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="" class="control-label col-md-4 col-sm-4"> 确认新密码: </label>
+                                <div class="col-md-6 col-sm-6 has-feedback">
+                                    <input type="password" class="form-control" id="newPassword_re"
+                                        name="newPassword_re">
+                                </div>
+                            </div>
+                            <input id="reset" type="reset" style="display:none">
+                        </form>
+
+                    </div>
+                    <div class="col-md-1 col-sm-1"></div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-1 col-sm-1"></div>
+                    <div class="col-md-10 col-sm-10">
+                        <div class="alert alert-info" style="margin-top: 25px">
+                            <p>登录密码修改规则说明：</p>
+                            <p>1.密码长度为6~16位，至少包含数字、字母、特殊符号中的两类，字母区分大小写</p>
+                            <p>2.密码不可与账号相同</p>
+                        </div>
+                    </div>
+                    <div class="col-md-1 col-sm-1"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-success" id="init_password_modify_submit">
+                    <span>&nbsp;&nbsp;&nbsp;确定修改&nbsp;&nbsp;&nbsp;</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <script type="text/javascript"
         src="${pageContext.request.contextPath}/js/jquery-2.2.3.min.js"></script>
 <script type="text/javascript"

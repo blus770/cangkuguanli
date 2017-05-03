@@ -115,6 +115,7 @@ create table wms_user
 	USER_ID int not null auto_increment,
     USER_USERNAME varchar(30) not null,
     USER_PASSWORD varchar(40) not null,
+    USER_FIRST_LOGIN int not null,
     primary key (USER_ID)
 )engine=innodb;
 

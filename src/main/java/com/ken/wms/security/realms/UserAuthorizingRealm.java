@@ -106,6 +106,7 @@ public class UserAuthorizingRealm extends AuthorizingRealm {
                 // 设置部分用户信息到 Session
                 session.setAttribute("userID", userID);
                 session.setAttribute("userName", userInfoDTO.getUserName());
+                session.setAttribute("firstLogin", userInfoDTO.getFirstLogin());
                 List<RepositoryAdmin> repositoryAdmin = (List<RepositoryAdmin>) repositoryAdminManageService.selectByID(userInfoDTO.getUserID()).get("data");
                 session.setAttribute("repositoryBelong", "none");
                 if (!repositoryAdmin.isEmpty()){

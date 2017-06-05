@@ -538,7 +538,7 @@ public class EJConvertor {
      */
     private String getSetterMethodName(String fieldName) {
         // 尝试从缓存中取出, 若没有则生成再放入
-        return setterMethodNameCache.computeIfAbsent(fieldName, n -> "set" + n.replace(n.substring(0, 1), n.substring(0, 1).toUpperCase()));
+        return setterMethodNameCache.computeIfAbsent(fieldName, n -> "set" + n.replaceFirst(n.substring(0, 1), n.substring(0, 1).toUpperCase()));
     }
 
     /**
@@ -548,7 +548,7 @@ public class EJConvertor {
      * @return field对应的Getter方法名
      */
     private String getGetterMethodName(String fieldName) {
-        return getterMethodNameCache.computeIfAbsent(fieldName, n -> "get" + n.replace(n.substring(0, 1), n.substring(0, 1).toUpperCase()));
+        return getterMethodNameCache.computeIfAbsent(fieldName, n -> "get" + n.replaceFirst(n.substring(0, 1), n.substring(0, 1).toUpperCase()));
     }
 
     /**

@@ -185,7 +185,7 @@ create table wms_operation_record
 # 导入数据
 
 # 导入系统用户信息
-INSERT INTO `wms_user` VALUES (1001,'admin','6f5379e73c1a9eac6163ab8eaec7e41c'),(1018,'王皓','50f202f4862360e55635b0a9616ded13'),(1019,'李富荣','c4b3af5a5ab3e3d5aac4c5a5436201b8');
+INSERT INTO `wms_user` VALUES (1001,'admin','6f5379e73c1a9eac6163ab8eaec7e41c',0),(1018,'王皓','50f202f4862360e55635b0a9616ded13',1),(1019,'李富荣','c4b3af5a5ab3e3d5aac4c5a5436201b8',1);
 
 # 导入系统角色信息
 INSERT INTO `wms_roles` VALUES (1,'systemAdmin',NULL,'systemAdmin'),(2,'commonsAdmin',NULL,'commonsAdmin');

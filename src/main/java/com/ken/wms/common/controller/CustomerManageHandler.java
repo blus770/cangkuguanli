@@ -2,7 +2,7 @@ package com.ken.wms.common.controller;
 
 import com.ken.wms.common.service.Interface.CustomerManageService;
 import com.ken.wms.common.util.Response;
-import com.ken.wms.common.util.ResponseUtil;
+import com.ken.wms.common.util.ResponseFactory;
 import com.ken.wms.domain.Customer;
 import com.ken.wms.domain.Supplier;
 import com.ken.wms.exception.CustomerManageServiceException;
@@ -31,8 +31,6 @@ public class CustomerManageHandler {
 
     @Autowired
     private CustomerManageService customerManageService;
-    @Autowired
-    private ResponseUtil responseUtil;
 
     private static final String SEARCH_BY_ID = "searchByID";
     private static final String SEARCH_BY_NAME = "searchByName";
@@ -86,7 +84,7 @@ public class CustomerManageHandler {
                                         @RequestParam("limit") int limit,
                                         @RequestParam("keyWord") String keyWord) throws CustomerManageServiceException {
         // 初始化 Response
-        Response responseContent = responseUtil.newResponseInstance();
+        Response responseContent = ResponseFactory.newInstance();
 
         List<Supplier> rows = null;
         long total = 0;
@@ -116,7 +114,7 @@ public class CustomerManageHandler {
     @ResponseBody
     Map<String, Object> addCustomer(@RequestBody Customer customer) throws CustomerManageServiceException {
         // 初始化 Response
-        Response responseContent = responseUtil.newResponseInstance();
+        Response responseContent = ResponseFactory.newInstance();
 
         // 添加记录
         String result = customerManageService.addCustomer(customer) ? Response.RESPONSE_RESULT_SUCCESS : Response.RESPONSE_RESULT_ERROR;
@@ -137,7 +135,7 @@ public class CustomerManageHandler {
     @ResponseBody
     Map<String, Object> getCustomerInfo(@RequestParam("customerID") String customerID) throws CustomerManageServiceException {
         // 初始化 Response
-        Response responseContent = responseUtil.newResponseInstance();
+        Response responseContent = ResponseFactory.newInstance();
         String result = Response.RESPONSE_RESULT_ERROR;
 
         // 获取客户信息
@@ -168,7 +166,7 @@ public class CustomerManageHandler {
     @ResponseBody
     Map<String, Object> updateCustomer(@RequestBody Customer customer) throws CustomerManageServiceException {
         // 初始化 Response
-        Response responseContent = responseUtil.newResponseInstance();
+        Response responseContent = ResponseFactory.newInstance();
 
         // 更新
         String result = customerManageService.updateCustomer(customer) ? Response.RESPONSE_RESULT_SUCCESS : Response.RESPONSE_RESULT_ERROR;
@@ -188,7 +186,7 @@ public class CustomerManageHandler {
     @ResponseBody
     Map<String, Object> deleteCustomer(@RequestParam("customerID") String customerIDStr) throws CustomerManageServiceException {
         // 初始化 Response
-        Response responseContent = responseUtil.newResponseInstance();
+        Response responseContent = ResponseFactory.newInstance();
 
         // 参数检查
         if (StringUtils.isNumeric(customerIDStr)) {
@@ -216,7 +214,7 @@ public class CustomerManageHandler {
     @ResponseBody
     Map<String, Object> importCustomer(@RequestParam("file") MultipartFile file) throws CustomerManageServiceException {
         // 初始化 Response
-        Response responseContent = responseUtil.newResponseInstance();
+        Response responseContent = ResponseFactory.newInstance();
         String result = Response.RESPONSE_RESULT_SUCCESS;
 
         // 读取文件内容

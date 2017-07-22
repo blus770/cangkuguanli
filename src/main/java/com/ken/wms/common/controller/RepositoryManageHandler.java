@@ -2,7 +2,7 @@ package com.ken.wms.common.controller;
 
 import com.ken.wms.common.service.Interface.RepositoryService;
 import com.ken.wms.common.util.Response;
-import com.ken.wms.common.util.ResponseUtil;
+import com.ken.wms.common.util.ResponseFactory;
 import com.ken.wms.domain.Repository;
 import com.ken.wms.exception.RepositoryManageServiceException;
 import org.apache.commons.lang3.StringUtils;
@@ -32,8 +32,6 @@ public class RepositoryManageHandler {
 
     @Autowired
     private RepositoryService repositoryService;
-    @Autowired
-    private ResponseUtil responseUtil;
 
     private static final String SEARCH_BY_ID = "searchByID";
     private static final String SEARCH_BY_ADDRESS = "searchByAddress";
@@ -88,7 +86,7 @@ public class RepositoryManageHandler {
                                           @RequestParam("offset") int offset, @RequestParam("limit") int limit,
                                           @RequestParam("keyWord") String keyWord) throws RepositoryManageServiceException {
         // 初始化 Response
-        Response responseContent = responseUtil.newResponseInstance();
+        Response responseContent = ResponseFactory.newInstance();
 
         List<Repository> rows = null;
         long total = 0;
@@ -146,7 +144,7 @@ public class RepositoryManageHandler {
     @ResponseBody
     Map<String, Object> addRepository(@RequestBody Repository repository) throws RepositoryManageServiceException {
         // 初始化 Response
-        Response responseContent = responseUtil.newResponseInstance();
+        Response responseContent = ResponseFactory.newInstance();
 
         // 添加记录
         String result = repositoryService.addRepository(repository) ? Response.RESPONSE_RESULT_SUCCESS : Response.RESPONSE_RESULT_ERROR;
@@ -168,7 +166,7 @@ public class RepositoryManageHandler {
     @ResponseBody
     Map<String, Object> getRepositoryInfo(@RequestParam("repositoryID") Integer repositoryID) throws RepositoryManageServiceException {
         // 初始化 Response
-        Response responseContent = responseUtil.newResponseInstance();
+        Response responseContent = ResponseFactory.newInstance();
         String result = Response.RESPONSE_RESULT_ERROR;
 
         // 查询
@@ -198,7 +196,7 @@ public class RepositoryManageHandler {
     @ResponseBody
     Map<String, Object> updateRepository(@RequestBody Repository repository) throws RepositoryManageServiceException {
         // 初始化 Response
-        Response responseContent = responseUtil.newResponseInstance();
+        Response responseContent = ResponseFactory.newInstance();
 
         // 更新
         String result = repositoryService.updateRepository(repository) ? Response.RESPONSE_RESULT_SUCCESS : Response.RESPONSE_RESULT_ERROR;
@@ -220,7 +218,7 @@ public class RepositoryManageHandler {
     @ResponseBody
     Map<String, Object> deleteRepository(@RequestParam("repositoryID") Integer repositoryID) throws RepositoryManageServiceException {
         // 初始化 Response
-        Response responseContent = responseUtil.newResponseInstance();
+        Response responseContent = ResponseFactory.newInstance();
 
         // 删除记录
         String result = repositoryService.deleteRepository(repositoryID) ? Response.RESPONSE_RESULT_SUCCESS : Response.RESPONSE_RESULT_ERROR;
@@ -242,7 +240,7 @@ public class RepositoryManageHandler {
     @ResponseBody
     Map<String, Object> importRepository(MultipartFile file) throws RepositoryManageServiceException {
         // 初始化 Response
-        Response responseContent = responseUtil.newResponseInstance();
+        Response responseContent = ResponseFactory.newInstance();
         String result = Response.RESPONSE_RESULT_ERROR;
 
         // 读取文件

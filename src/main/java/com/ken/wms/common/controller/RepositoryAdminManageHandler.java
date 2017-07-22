@@ -2,7 +2,7 @@ package com.ken.wms.common.controller;
 
 import com.ken.wms.common.service.Interface.RepositoryAdminManageService;
 import com.ken.wms.common.util.Response;
-import com.ken.wms.common.util.ResponseUtil;
+import com.ken.wms.common.util.ResponseFactory;
 import com.ken.wms.domain.RepositoryAdmin;
 import com.ken.wms.exception.RepositoryAdminManageServiceException;
 import org.apache.commons.lang3.StringUtils;
@@ -31,8 +31,6 @@ public class RepositoryAdminManageHandler {
 
     @Autowired
     private RepositoryAdminManageService repositoryAdminManageService;
-    @Autowired
-    private ResponseUtil responseUtil;
 
     // 查询类型
     private static final String SEARCH_BY_ID = "searchByID";
@@ -93,7 +91,7 @@ public class RepositoryAdminManageHandler {
                                            @RequestParam("keyWord") String keyWord, @RequestParam("offset") int offset,
                                            @RequestParam("limit") int limit) throws RepositoryAdminManageServiceException {
         // 初始化 Response
-        Response responseContent = responseUtil.newResponseInstance();
+        Response responseContent = ResponseFactory.newInstance();
 
         List<RepositoryAdmin> rows = null;
         long total = 0;
@@ -123,7 +121,7 @@ public class RepositoryAdminManageHandler {
     @ResponseBody
     Map<String, Object> addRepositoryAdmin(@RequestBody RepositoryAdmin repositoryAdmin) throws RepositoryAdminManageServiceException {
         // 初始化 Response
-        Response responseContent = responseUtil.newResponseInstance();
+        Response responseContent = ResponseFactory.newInstance();
 
         // 添加结果
         String result = repositoryAdminManageService.addRepositoryAdmin(repositoryAdmin)
@@ -146,7 +144,7 @@ public class RepositoryAdminManageHandler {
     @ResponseBody
     Map<String, Object> getRepositoryAdminInfo(Integer repositoryAdminID) throws RepositoryAdminManageServiceException {
         // 初始化 Response
-        Response responseContent = responseUtil.newResponseInstance();
+        Response responseContent = ResponseFactory.newInstance();
         String result = Response.RESPONSE_RESULT_ERROR;
 
         // 查询
@@ -175,7 +173,7 @@ public class RepositoryAdminManageHandler {
     @ResponseBody
     Map<String, Object> updateRepositoryAdmin(@RequestBody RepositoryAdmin repositoryAdmin) throws RepositoryAdminManageServiceException {
         // 初始化 Response
-        Response responseContent = responseUtil.newResponseInstance();
+        Response responseContent = ResponseFactory.newInstance();
 
         // 更新
         String result = repositoryAdminManageService.updateRepositoryAdmin(repositoryAdmin)
@@ -198,7 +196,7 @@ public class RepositoryAdminManageHandler {
     @ResponseBody
     Map<String, Object> deleteRepositoryAdmin(Integer repositoryAdminID) throws RepositoryAdminManageServiceException {
         // 初始化 Response
-        Response responseContent = responseUtil.newResponseInstance();
+        Response responseContent = ResponseFactory.newInstance();
 
         // 删除记录
         String result = repositoryAdminManageService.deleteRepositoryAdmin(repositoryAdminID)
@@ -221,7 +219,7 @@ public class RepositoryAdminManageHandler {
     @ResponseBody
     Map<String, Object> importRepositoryAdmin(MultipartFile file) throws RepositoryAdminManageServiceException {
         // 初始化 Response
-        Response responseContent = responseUtil.newResponseInstance();
+        Response responseContent = ResponseFactory.newInstance();
         String result = Response.RESPONSE_RESULT_ERROR;
 
         // 读取文件

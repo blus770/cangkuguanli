@@ -8,7 +8,7 @@ import com.ken.wms.domain.UserInfoDO;
 import com.ken.wms.domain.UserInfoDTO;
 import com.ken.wms.exception.UserInfoServiceException;
 import com.ken.wms.security.service.Interface.UserInfoService;
-import com.ken.wms.security.util.EncryptingModel;
+import com.ken.wms.security.util.MD5Util;
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,8 +32,6 @@ public class UserInfoServiceImpl implements UserInfoService {
     private UserInfoMapper userInfoMapper;
     @Autowired
     private UserPermissionMapper userPermissionMapper;
-    @Autowired
-    private EncryptingModel encryptingModel;
     @Autowired
     private RolesMapper rolesMapper;
     @Autowired
@@ -191,8 +189,8 @@ public class UserInfoServiceImpl implements UserInfoService {
 
         try {
             // 对密码进行加密
-            String tempStr = encryptingModel.MD5(password);
-            String encryptPassword = encryptingModel.MD5(tempStr + userID.toString());
+            String tempStr = MD5Util.MD5(password);
+            String encryptPassword = MD5Util.MD5(tempStr + userID.toString());
 
             // 创建用户信息数据实体
             UserInfoDO userInfoDO = new UserInfoDO();
@@ -219,7 +217,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 
             return true;
 
-        } catch (NoSuchAlgorithmException | PersistenceException e) {
+        } catch (PersistenceException e) {
             throw new UserInfoServiceException(e);
         }
     }

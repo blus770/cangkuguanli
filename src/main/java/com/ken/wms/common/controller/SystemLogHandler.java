@@ -2,7 +2,7 @@ package com.ken.wms.common.controller;
 
 import com.ken.wms.common.service.Interface.SystemLogService;
 import com.ken.wms.common.util.Response;
-import com.ken.wms.common.util.ResponseUtil;
+import com.ken.wms.common.util.ResponseFactory;
 import com.ken.wms.domain.AccessRecordDO;
 import com.ken.wms.domain.UserOperationRecordDTO;
 import com.ken.wms.exception.SystemLogServiceException;
@@ -30,8 +30,6 @@ public class SystemLogHandler {
 
     @Autowired
     private SystemLogService systemLogService;
-    @Autowired
-    private ResponseUtil responseUtil;
 
     /**
      * 查询系统的登入登出日志
@@ -55,7 +53,7 @@ public class SystemLogHandler {
                                          @RequestParam("offset") int offset,
                                          @RequestParam("limit") int limit) throws SystemLogServiceException {
         // 创建 Response 对象
-        Response response = responseUtil.newResponseInstance();
+        Response response = ResponseFactory.newInstance();
         List<AccessRecordDO> rows = null;
         long total = 0;
 
@@ -107,7 +105,7 @@ public class SystemLogHandler {
                                                    @RequestParam("offset") int offset,
                                                    @RequestParam("limit") int limit) throws SystemLogServiceException {
         // 创建 Response
-        Response response = responseUtil.newResponseInstance();
+        Response response = ResponseFactory.newInstance();
         List<UserOperationRecordDTO> rows = null;
         long total = 0;
 

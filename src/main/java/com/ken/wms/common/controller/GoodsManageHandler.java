@@ -2,7 +2,7 @@ package com.ken.wms.common.controller;
 
 import com.ken.wms.common.service.Interface.GoodsManageService;
 import com.ken.wms.common.util.Response;
-import com.ken.wms.common.util.ResponseUtil;
+import com.ken.wms.common.util.ResponseFactory;
 import com.ken.wms.domain.Goods;
 import com.ken.wms.domain.Supplier;
 import com.ken.wms.exception.GoodsManageServiceException;
@@ -31,8 +31,6 @@ public class GoodsManageHandler {
 
     @Autowired
     private GoodsManageService goodsManageService;
-    @Autowired
-    private ResponseUtil responseUtil;
 
     private static final String SEARCH_BY_ID = "searchByID";
     private static final String SEARCH_BY_NAME = "searchByName";
@@ -86,7 +84,7 @@ public class GoodsManageHandler {
                                      @RequestParam("offset") int offset, @RequestParam("limit") int limit,
                                      @RequestParam("keyWord") String keyWord) throws GoodsManageServiceException {
         // 初始化 Response
-        Response responseContent = responseUtil.newResponseInstance();
+        Response responseContent = ResponseFactory.newInstance();
         List<Supplier> rows = null;
         long total = 0;
 
@@ -115,7 +113,7 @@ public class GoodsManageHandler {
     @ResponseBody
     Map<String, Object> addGoods(@RequestBody Goods goods) throws GoodsManageServiceException {
         // 初始化 Response
-        Response responseContent = responseUtil.newResponseInstance();
+        Response responseContent = ResponseFactory.newInstance();
 
         // 添加记录
         String result = goodsManageService.addGoods(goods) ? Response.RESPONSE_RESULT_SUCCESS : Response.RESPONSE_RESULT_ERROR;
@@ -138,7 +136,7 @@ public class GoodsManageHandler {
     @ResponseBody
     Map<String, Object> getGoodsInfo(@RequestParam("goodsID") Integer goodsID) throws GoodsManageServiceException {
         // 初始化 Response
-        Response responseContent = responseUtil.newResponseInstance();
+        Response responseContent = ResponseFactory.newInstance();
         String result = Response.RESPONSE_RESULT_ERROR;
 
         // 获取货物信息
@@ -168,7 +166,7 @@ public class GoodsManageHandler {
     @ResponseBody
     Map<String, Object> updateGoods(@RequestBody Goods goods) throws GoodsManageServiceException {
         // 初始化 Response
-        Response responseContent = responseUtil.newResponseInstance();
+        Response responseContent = ResponseFactory.newInstance();
 
         // 更新
         String result = goodsManageService.updateGoods(goods) ? Response.RESPONSE_RESULT_SUCCESS : Response.RESPONSE_RESULT_ERROR;
@@ -189,7 +187,7 @@ public class GoodsManageHandler {
     @ResponseBody
     Map<String, Object> deleteGoods(@RequestParam("goodsID") Integer goodsID) throws GoodsManageServiceException {
         // 初始化 Response
-        Response responseContent = responseUtil.newResponseInstance();
+        Response responseContent = ResponseFactory.newInstance();
 
         // 删除
         String result = goodsManageService.deleteGoods(goodsID) ? Response.RESPONSE_RESULT_SUCCESS : Response.RESPONSE_RESULT_ERROR;
@@ -211,7 +209,7 @@ public class GoodsManageHandler {
     @ResponseBody
     Map<String, Object> importGoods(@RequestParam("file") MultipartFile file) throws GoodsManageServiceException {
         //  初始化 Response
-        Response responseContent = responseUtil.newResponseInstance();
+        Response responseContent = ResponseFactory.newInstance();
         String result = Response.RESPONSE_RESULT_ERROR;
 
         // 读取文件内容

@@ -7,7 +7,7 @@ import com.ken.wms.domain.UserInfoDTO;
 import com.ken.wms.exception.RepositoryAdminManageServiceException;
 import com.ken.wms.exception.UserInfoServiceException;
 import com.ken.wms.security.service.Interface.UserInfoService;
-import com.ken.wms.security.util.EncryptingModel;
+import com.ken.wms.security.util.MD5Util;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
@@ -34,8 +34,6 @@ public class UserAuthorizingRealm extends AuthorizingRealm {
 
     @Autowired
     private UserInfoService userInfoService;
-    @Autowired
-    private EncryptingModel encryptingModel;
     @Autowired
     private RepositoryAdminManageService repositoryAdminManageService;
     @Autowired
@@ -121,12 +119,12 @@ public class UserAuthorizingRealm extends AuthorizingRealm {
                 String password = userInfoDTO.getPassword();
                 if (checkCode != null && password != null) {
                     checkCode = checkCode.toUpperCase();
-                    credentials = encryptingModel.MD5(password + checkCode);
+                    credentials = MD5Util.MD5(password + checkCode);
                 }
             }
             return new SimpleAuthenticationInfo(principal, credentials, realmName);
 
-        } catch (UserInfoServiceException | RepositoryAdminManageServiceException | NoSuchAlgorithmException e) {
+        } catch (UserInfoServiceException | RepositoryAdminManageServiceException e) {
             throw new AuthenticationException();
         }
     }

@@ -2,11 +2,11 @@ package com.ken.wms.security.controller;
 
 import com.ken.wms.common.service.Interface.SystemLogService;
 import com.ken.wms.common.util.Response;
-import com.ken.wms.common.util.ResponseUtil;
+import com.ken.wms.common.util.ResponseFactory;
 import com.ken.wms.exception.SystemLogServiceException;
 import com.ken.wms.exception.UserAccountServiceException;
 import com.ken.wms.security.service.Interface.AccountService;
-import com.ken.wms.security.util.CheckCodeGenerator;
+import com.ken.wms.security.util.CaptchaGenerator;
 import org.apache.log4j.Logger;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
@@ -41,10 +41,6 @@ public class AccountHandler {
     private static Logger log = Logger.getLogger("application");
 
     @Autowired
-    private ResponseUtil responseUtil;
-    @Autowired
-    private CheckCodeGenerator checkCodeGenerator;
-    @Autowired
     private AccountService accountService;
     @Autowired
     private SystemLogService systemLogService;
@@ -65,7 +61,7 @@ public class AccountHandler {
     @ResponseBody
     Map<String, Object> login(@RequestBody Map<String, Object> user) {
         // 初始化 Response
-        Response response = responseUtil.newResponseInstance();
+        Response response = ResponseFactory.newInstance();
         String result = Response.RESPONSE_RESULT_ERROR;
         String errorMsg = "";
 
@@ -120,7 +116,7 @@ public class AccountHandler {
     @ResponseBody
     Map<String, Object> logout() {
         // 初始化 Response
-        Response response = responseUtil.newResponseInstance();
+        Response response = ResponseFactory.newInstance();
 
         Subject currentSubject = SecurityUtils.getSubject();
         if (currentSubject != null && currentSubject.isAuthenticated()) {
@@ -149,7 +145,7 @@ public class AccountHandler {
     Map<String, Object> passwordModify(@RequestBody Map<String, Object> passwordInfo,
                                        HttpServletRequest request) {
         //初始化 Response
-        Response responseContent = responseUtil.newResponseInstance();
+        Response responseContent = ResponseFactory.newInstance();
 
         String errorMsg = null;
         String result = Response.RESPONSE_RESULT_ERROR;
@@ -185,11 +181,11 @@ public class AccountHandler {
         String checkCodeString = null;
 
         // 获取图形验证码
-        Map<String, Object> checkCode = checkCodeGenerator.generlateCheckCode();
+        Map<String, Object> checkCode = CaptchaGenerator.generateCaptcha();
 
         if (checkCode != null) {
-            checkCodeString = (String) checkCode.get("checkCodeString");
-            checkCodeImage = (BufferedImage) checkCode.get("checkCodeImage");
+            checkCodeString = (String) checkCode.get("captchaString");
+            checkCodeImage = (BufferedImage) checkCode.get("captchaImage");
         }
 
         if (checkCodeString != null && checkCodeImage != null) {

@@ -2,7 +2,7 @@ package com.ken.wms.common.controller;
 
 import com.ken.wms.common.service.Interface.SupplierManageService;
 import com.ken.wms.common.util.Response;
-import com.ken.wms.common.util.ResponseUtil;
+import com.ken.wms.common.util.ResponseFactory;
 import com.ken.wms.domain.Supplier;
 import com.ken.wms.exception.SupplierManageServiceException;
 import org.apache.commons.lang3.StringUtils;
@@ -30,8 +30,6 @@ public class SupplierManageHandler {
 
     @Autowired
     private SupplierManageService supplierManageService;
-    @Autowired
-    private ResponseUtil responseUtil;
 
     private static final String SEARCH_BY_ID = "searchByID";
     private static final String SEARCH_BY_NAME = "searchByName";
@@ -86,7 +84,7 @@ public class SupplierManageHandler {
                                         @RequestParam("offset") int offset, @RequestParam("limit") int limit,
                                         @RequestParam("keyWord") String keyWord) throws SupplierManageServiceException {
         // 初始化 Response
-        Response responseContent = responseUtil.newResponseInstance();
+        Response responseContent = ResponseFactory.newInstance();
 
         List<Supplier> rows = null;
         long total = 0;
@@ -115,7 +113,7 @@ public class SupplierManageHandler {
     @ResponseBody
     Map<String, Object> addSupplier(@RequestBody Supplier supplier) throws SupplierManageServiceException {
         // 初始化 Response
-        Response responseContent = responseUtil.newResponseInstance();
+        Response responseContent = ResponseFactory.newInstance();
 
         // 添加记录
         String result = supplierManageService.addSupplier(supplier) ? Response.RESPONSE_RESULT_SUCCESS : Response.RESPONSE_RESULT_ERROR;
@@ -137,7 +135,7 @@ public class SupplierManageHandler {
     @ResponseBody
     Map<String, Object> getSupplierInfo(@RequestParam("supplierID") int supplierID) throws SupplierManageServiceException {
         // 初始化 Response
-        Response responseContent = responseUtil.newResponseInstance();
+        Response responseContent = ResponseFactory.newInstance();
         String result = Response.RESPONSE_RESULT_ERROR;
 
         // 获取供应点信息
@@ -166,7 +164,7 @@ public class SupplierManageHandler {
     @ResponseBody
     Map<String, Object> updateSupplier(@RequestBody Supplier supplier) throws SupplierManageServiceException {
         // 初始化 Response
-        Response responseContent = responseUtil.newResponseInstance();
+        Response responseContent = ResponseFactory.newInstance();
 
         // 更新
         String result = supplierManageService.updateSupplier(supplier) ? Response.RESPONSE_RESULT_SUCCESS : Response.RESPONSE_RESULT_ERROR;
@@ -187,7 +185,7 @@ public class SupplierManageHandler {
     @ResponseBody
     Map<String, Object> deleteSupplier(@RequestParam("supplierID") Integer supplierID) {
         // 初始化 Response
-        Response responseContent = responseUtil.newResponseInstance();
+        Response responseContent = ResponseFactory.newInstance();
 
         // 刪除
         String result = supplierManageService.deleteSupplier(supplierID) ? Response.RESPONSE_RESULT_SUCCESS : Response.RESPONSE_RESULT_ERROR;
@@ -209,7 +207,7 @@ public class SupplierManageHandler {
     @ResponseBody
     Map<String, Object> importSupplier(@RequestParam("file") MultipartFile file) throws SupplierManageServiceException {
         // 初始化 Response
-        Response responseContent = responseUtil.newResponseInstance();
+        Response responseContent = ResponseFactory.newInstance();
         String result = Response.RESPONSE_RESULT_SUCCESS;
 
         // 读取文件内容

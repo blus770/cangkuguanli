@@ -3,9 +3,8 @@ package com.ken.wms.common.controller;
 import com.ken.wms.common.service.Interface.StockRecordManageService;
 import com.ken.wms.common.service.Interface.StorageManageService;
 import com.ken.wms.common.util.Response;
-import com.ken.wms.common.util.ResponseUtil;
+import com.ken.wms.common.util.ResponseFactory;
 import com.ken.wms.domain.Storage;
-import com.ken.wms.exception.StockRecordManageServiceException;
 import com.ken.wms.exception.StorageManageServiceException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,8 +36,6 @@ public class StorageManageHandler {
     private StorageManageService storageManageService;
     @Autowired
     private StockRecordManageService stockRecordManageService;
-    @Autowired
-    private ResponseUtil responseUtil;
 
     private static final String SEARCH_BY_GOODS_ID = "searchByGoodsID";
     private static final String SEARCH_BY_GOODS_NAME = "searchByGoodsName";
@@ -118,7 +115,7 @@ public class StorageManageHandler {
                                                  @RequestParam("searchType") String searchType, @RequestParam("repositoryBelong") String repositoryBelong,
                                                  @RequestParam("offset") int offset, @RequestParam("limit") int limit) throws StorageManageServiceException {
         // 初始化 Response
-        Response responseContent = responseUtil.newResponseInstance();
+        Response responseContent = ResponseFactory.newInstance();
 
         List<Storage> rows;
         long total = 0;
@@ -155,7 +152,7 @@ public class StorageManageHandler {
                                        @RequestParam("searchType") String searchType, @RequestParam("offset") int offset,
                                        @RequestParam("limit") int limit, HttpServletRequest request) throws StorageManageServiceException {
         // 初始化 Response
-        Response responseContent = responseUtil.newResponseInstance();
+        Response responseContent = ResponseFactory.newInstance();
 
         List<Storage> rows = null;
         long total = 0;
@@ -189,7 +186,7 @@ public class StorageManageHandler {
     @ResponseBody
     Map<String, Object> addStorageRecord(@RequestBody Map<String, Object> params) throws StorageManageServiceException {
         // 初始化 Response
-        Response responseContent = responseUtil.newResponseInstance();
+        Response responseContent = ResponseFactory.newInstance();
         String isSuccess = Response.RESPONSE_RESULT_ERROR;
         boolean isAvailable = true;
 
@@ -224,7 +221,7 @@ public class StorageManageHandler {
     @ResponseBody
     Map<String, Object> updateStorageRecord(@RequestBody Map<String, Object> params) throws StorageManageServiceException {
         // 初始化 Response
-        Response responseContent = responseUtil.newResponseInstance();
+        Response responseContent = ResponseFactory.newInstance();
         boolean isAvailable = true;
         String result = Response.RESPONSE_RESULT_ERROR;
 
@@ -262,7 +259,7 @@ public class StorageManageHandler {
     Map<String, Object> deleteStorageRecord(@RequestParam("goodsID") String goodsID,
                                             @RequestParam("repositoryID") String repositoryID) throws StorageManageServiceException {
         // 初始化 Response
-        Response responseContent = responseUtil.newResponseInstance();
+        Response responseContent = ResponseFactory.newInstance();
 
         String result = Response.RESPONSE_RESULT_ERROR;
         boolean isAvailable = true;
@@ -294,7 +291,7 @@ public class StorageManageHandler {
     @ResponseBody
     Map<String, Object> importStorageRecord(@RequestParam("file") MultipartFile file) throws StorageManageServiceException {
         // 初始化 Response
-        Response responseContent = responseUtil.newResponseInstance();
+        Response responseContent = ResponseFactory.newInstance();
         String result = Response.RESPONSE_RESULT_ERROR;
 
         int total = 0;

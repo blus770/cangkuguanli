@@ -6,7 +6,7 @@ import com.ken.wms.exception.UserAccountServiceException;
 import com.ken.wms.exception.UserInfoServiceException;
 import com.ken.wms.security.service.Interface.AccountService;
 import com.ken.wms.security.service.Interface.UserInfoService;
-import com.ken.wms.security.util.EncryptingModel;
+import com.ken.wms.security.util.MD5Util;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
@@ -27,9 +27,6 @@ public class AccountServiceImpl implements AccountService {
 
     @Autowired
     private UserInfoService userInfoService;
-    @Autowired
-    private EncryptingModel encryptingModel;
-
 
     private static final String OLD_PASSWORD = "oldPassword";
     private static final String NEW_PASSWORD = "newPassword";
@@ -65,12 +62,12 @@ public class AccountServiceImpl implements AccountService {
 
             // 原密码正确性验证
             String password;
-            password = encryptingModel.MD5(oldPassword + userID);
+            password = MD5Util.MD5(oldPassword + userID);
             if (!password.equals(user.getPassword()))
                 throw new UserAccountServiceException(UserAccountServiceException.PASSWORD_ERROR);
 
             // 获得新的密码并加密
-            password = encryptingModel.MD5(newPassword + userID);
+            password = MD5Util.MD5(newPassword + userID);
 
             // 验证成功后更新数据库
             user.setPassword(password);
@@ -82,7 +79,7 @@ public class AccountServiceImpl implements AccountService {
             Session session = currentSubject.getSession();
             session.setAttribute("firstLogin", false);
 
-        } catch (NoSuchAlgorithmException | NullPointerException | UserInfoServiceException e) {
+        } catch (NullPointerException | UserInfoServiceException e) {
             throw new UserAccountServiceException(UserAccountServiceException.PASSWORD_ERROR);
         }
 

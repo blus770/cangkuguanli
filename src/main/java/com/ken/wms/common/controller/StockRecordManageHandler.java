@@ -2,7 +2,7 @@ package com.ken.wms.common.controller;
 
 import com.ken.wms.common.service.Interface.StockRecordManageService;
 import com.ken.wms.common.util.Response;
-import com.ken.wms.common.util.ResponseUtil;
+import com.ken.wms.common.util.ResponseFactory;
 import com.ken.wms.domain.StockRecordDTO;
 import com.ken.wms.exception.StockRecordManageServiceException;
 import org.apache.commons.lang3.StringUtils;
@@ -32,8 +32,6 @@ import java.util.Map;
 public class StockRecordManageHandler {
 
     @Autowired
-    private ResponseUtil responseUtil;
-    @Autowired
     private StockRecordManageService stockRecordManageService;
 
     /**
@@ -53,7 +51,7 @@ public class StockRecordManageHandler {
                                  @RequestParam(value = "repositoryID", required = false) String repositoryIDStr,
                                  @RequestParam("number") long number) throws StockRecordManageServiceException {
         // 初始化 Response
-        Response responseContent = responseUtil.newResponseInstance();
+        Response responseContent = ResponseFactory.newInstance();
         String result = Response.RESPONSE_RESULT_ERROR;
         boolean authorizeCheck = true;
         boolean argumentCheck = true;
@@ -112,7 +110,7 @@ public class StockRecordManageHandler {
                                 @RequestParam(value = "repositoryID", required = false) String repositoryIDStr,
                                 @RequestParam("number") long number) throws StockRecordManageServiceException {
         // 初始化 Response
-        Response responseContent = responseUtil.newResponseInstance();
+        Response responseContent = ResponseFactory.newInstance();
         String result = Response.RESPONSE_RESULT_ERROR;
         boolean authorizeCheck = true;
         boolean argumentCheck = true;
@@ -177,7 +175,7 @@ public class StockRecordManageHandler {
                                        @RequestParam("limit") int limit,
                                        @RequestParam("offset") int offset) throws ParseException, StockRecordManageServiceException {
         // 初始化 Response
-        Response responseContent = responseUtil.newResponseInstance();
+        Response responseContent = ResponseFactory.newInstance();
         List<StockRecordDTO> rows = null;
         long total = 0;
 

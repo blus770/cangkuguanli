@@ -30,19 +30,23 @@
 
     <!-- 配置 session manager -->
     <bean id="sessionManager" class="org.apache.shiro.web.session.mgt.DefaultWebSessionManager">
-        <property name="globalSessionTimeout" value="1800000"/>
-        <property name="deleteInvalidSessions" value="true"/>
         <property name="sessionDAO" ref="sessionDAO"/>
         <property name="sessionIdCookieEnabled" value="true"/>
         <property name="sessionIdCookie" ref="sessionIdCookie"/>
+        <!-- Session 超时配置 -->
+        <property name="globalSessionTimeout" value="1800000"/>
+        <property name="sessionValidationInterval" value="900000"/>
         <property name="sessionValidationSchedulerEnabled" value="true"/>
+        <property name="deleteInvalidSessions" value="true"/>
         <property name="sessionValidationScheduler" ref="sessionValidationScheduler"/>
-        <property name="cacheManager" ref="cacheManager"/>
+        <!-- Session 监听器 -->
         <property name="sessionListeners">
             <list>
                 <ref bean="shiroSessionListener"/>
             </list>
         </property>
+        <!-- Session 缓存管理器 -->
+        <property name="cacheManager" ref="cacheManager"/>
     </bean>
 
     <bean id="authenticator" class="org.apache.shiro.authc.pam.ModularRealmAuthenticator">
@@ -70,7 +74,7 @@
 
     <!-- 会话验证定时器 -->
     <bean id="sessionValidationScheduler" class="org.apache.shiro.session.mgt.ExecutorServiceSessionValidationScheduler">
-        <property name="interval" value="1800000"/>
+        <property name="interval" value="900000"/>
         <property name="sessionManager" ref="sessionManager"/>
     </bean>
 

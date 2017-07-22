@@ -38,6 +38,11 @@
         <property name="sessionValidationSchedulerEnabled" value="true"/>
         <property name="sessionValidationScheduler" ref="sessionValidationScheduler"/>
         <property name="cacheManager" ref="cacheManager"/>
+        <property name="sessionListeners">
+            <list>
+                <ref bean="shiroSessionListener"/>
+            </list>
+        </property>
     </bean>
 
     <bean id="authenticator" class="org.apache.shiro.authc.pam.ModularRealmAuthenticator">
@@ -45,6 +50,9 @@
             <bean class="org.apache.shiro.authc.pam.AtLeastOneSuccessfulStrategy"/>
         </property>
     </bean>
+
+    <!-- Shiro Session 监听器 -->
+    <bean id="shiroSessionListener" class="com.ken.wms.security.listener.SessionListener"/>
 
     <!-- 缓存管理器 -->
     <bean id="cacheManager" class="org.apache.shiro.cache.ehcache.EhCacheManager">

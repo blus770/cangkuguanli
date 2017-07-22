@@ -27,7 +27,7 @@
         </property>
     </entity>
 
-    <entity class="com.ken.wms.domain.Customer" sheetName="供应商西信息" boldHeading="true">
+    <entity class="com.ken.wms.domain.Customer" sheetName="供应商信息" boldHeading="true">
         <property>
             <field>name</field>
             <value>客户名称</value>

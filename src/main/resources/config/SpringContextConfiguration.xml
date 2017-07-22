@@ -27,7 +27,7 @@
 
 
     <!-- ============================================
-                ExcelUtil 配置
+                      ExcelUtil 配置
          ============================================-->
     <bean id="EJConvertor" class="com.ken.wms.common.util.EJConvertor">
         <constructor-arg type="java.lang.String" value="config/EJConvertorConfig.xml"/>
@@ -35,7 +35,7 @@
 
 
     <!-- ============================================
-               持久化配置
+                        持久化配置
         ============================================-->
     <!-- 配置数据源 -->
     <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
@@ -56,7 +56,6 @@
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="dataSource"/>
     </bean>
-
     <tx:advice id="txAdvice" transaction-manager="transactionManager">
         <tx:attributes>
             <tx:method name="select*" read-only="true"/>
@@ -71,30 +70,35 @@
     </aop:config>
 
 
+    <!-- ==================================================
+                    日志记录的 AOP 配置
+        ================================================ -->
     <!-- 配置 Service 层日志记录 -->
     <bean id="serviceLogging" class="com.ken.wms.util.aop.ServiceLogging"/>
     <!-- 配置用户操作日志记录 -->
     <bean id="userOperationLogging" class="com.ken.wms.util.aop.UserOperationLogging"/>
-
-    <!-- AOP 配置 -->
     <aop:config>
         <aop:pointcut id="serviceMethodLoggingPointcut" expression="execution(* com.ken.wms.common.service.Impl.*.*(..)) ||
          execution(* com.ken.wms.security.service.Impl.*.*(..))"/>
         <aop:aspect id="serviceLoggingAspect" ref="serviceLogging" order="100">
             <aop:before method="loggingMethodInvoked" pointcut-ref="serviceMethodLoggingPointcut"/>
             <aop:after-throwing method="loggingServiceException" pointcut-ref="serviceMethodLoggingPointcut"
-            throwing="throwable"/>
+                                throwing="throwable"/>
         </aop:aspect>
     </aop:config>
     <aop:config>
-        <aop:pointcut expression="execution(* com.ken.wms.common.service.Impl.*.*(..)) and @annotation(userOperation)" id="userOperationLoggingPointcut"/>
+        <aop:pointcut expression="execution(* com.ken.wms.common.service.Impl.*.*(..)) and @annotation(userOperation)"
+                      id="userOperationLoggingPointcut"/>
         <aop:aspect id="userOperationLoggingAspect" ref="userOperationLogging" order="20">
             <aop:after-returning method="loggingUserOperation" pointcut-ref="userOperationLoggingPointcut"
                                  returning="returnValue"/>
         </aop:aspect>
     </aop:config>
 
-    <!-- 配置 MyBatis MapperScannerConfigure -->
+
+    <!-- ===============================================
+               MyBatis MapperScannerConfigure 配置
+         =============================================== -->
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
         <property name="basePackage" value="com.ken.wms.dao"/>
     </bean>

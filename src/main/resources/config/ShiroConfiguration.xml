@@ -30,9 +30,13 @@
 
     <!-- 配置 session manager -->
     <bean id="sessionManager" class="org.apache.shiro.web.session.mgt.DefaultWebSessionManager">
+        <!-- Session 持久化配置 -->
         <property name="sessionDAO" ref="sessionDAO"/>
+        <!-- SESSIONID Cookie 配置 -->
         <property name="sessionIdCookieEnabled" value="true"/>
         <property name="sessionIdCookie" ref="sessionIdCookie"/>
+        <!-- 关闭 URL 的 JSESSIONID 重写 -->
+        <property name="sessionIdUrlRewritingEnabled" value="false"/>
         <!-- Session 超时配置 -->
         <property name="globalSessionTimeout" value="1800000"/>
         <property name="sessionValidationInterval" value="900000"/>
@@ -49,6 +53,7 @@
         <property name="cacheManager" ref="cacheManager"/>
     </bean>
 
+    <!-- Realm 验证器， 配置验证策略 -->
     <bean id="authenticator" class="org.apache.shiro.authc.pam.ModularRealmAuthenticator">
         <property name="authenticationStrategy">
             <bean class="org.apache.shiro.authc.pam.AtLeastOneSuccessfulStrategy"/>
@@ -73,7 +78,8 @@
     <bean id="sessionIdGenerator" class="org.apache.shiro.session.mgt.eis.JavaUuidSessionIdGenerator"/>
 
     <!-- 会话验证定时器 -->
-    <bean id="sessionValidationScheduler" class="org.apache.shiro.session.mgt.ExecutorServiceSessionValidationScheduler">
+    <bean id="sessionValidationScheduler"
+          class="org.apache.shiro.session.mgt.ExecutorServiceSessionValidationScheduler">
         <property name="interval" value="900000"/>
         <property name="sessionManager" ref="sessionManager"/>
     </bean>
@@ -85,7 +91,7 @@
         <property name="maxAge" value="-1"/>
     </bean>
 
-    <!-- 自定义 Realm 的配置 -->
+    <!-- 自定义用户授权与认证 Realm 的配置 -->
     <bean id="userAuthorizingRealm" class="com.ken.wms.security.realms.UserAuthorizingRealm"/>
 
 
@@ -98,11 +104,11 @@
     <bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
         <property name="securityManager" ref="securityManager"/>
     </bean>
+
+    <!-- Shiro 的 Filter 配置 -->
     <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
         <property name="securityManager" ref="securityManager"/>
         <property name="loginUrl" value="/login"/>
-        <property name="successUrl" value="/main"/>
-        <property name="unauthorizedUrl" value="/jsp/unauthorized.html"/>
         <property name="filters">
             <util:map>
                 <entry key="roles" value-ref="anyOfRoles"/>
@@ -112,16 +118,19 @@
         </property>
         <property name="filterChainDefinitionMap" ref="filterChainDefinitionMap"/>
     </bean>
-    <!-- 配置身份验证器，处理 Ajax 请求 -->
+
+    <!-- 可处理 Ajax 请求的 authc Filter -->
     <bean id="extendFormAuthenticationFilter" class="com.ken.wms.security.filter.ExtendFormAuthenticationFilter">
         <property name="usernameParam" value="username"/>
         <property name="passwordParam" value="password"/>
         <property name="rememberMeParam" value="rememberMe"/>
         <property name="loginUrl" value="/login"/>
     </bean>
-    <!-- 多角色权限验证 -->
+
+    <!-- 多角色权限验证 Filter -->
     <bean id="anyOfRoles" class="com.ken.wms.security.filter.AnyOfRolesAuthorizationFilter"/>
-    <!-- 并发登陆人数控制 -->
+
+    <!-- 并发登陆人数控制 Filter -->
     <bean id="kickOutSessionControlFilter" class="com.ken.wms.security.filter.KickoutSessionControlFilter">
         <property name="kickOutUrl" value="/login"/>
         <property name="kickOutAfter" value="false"/>
@@ -129,6 +138,7 @@
         <property name="sessionManager" ref="sessionManager"/>
         <property name="cacheManager" ref="cacheManager"/>
     </bean>
+
     <!-- 配置获取 URL 权限信息的 Factory -->
     <bean id="filterChainDefinitionMap" factory-bean="filterChainDefinitionMapBuilder"
           factory-method="builderFilterChainDefinitionMap"/>

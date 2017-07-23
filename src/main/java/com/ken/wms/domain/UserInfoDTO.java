@@ -5,6 +5,7 @@ import java.util.List;
 
 /**
  * 用户账户信息（数据传输对象）
+ *
  * @author ken
  * @since 2017/2/26.
  */
@@ -31,9 +32,19 @@ public class UserInfoDTO {
     private boolean firstLogin;
 
     /**
+     * 用户登陆的IP
+     */
+    private String accessIP;
+
+    /**
      * 用户角色
      */
     private List<String> role = new ArrayList<>();
+
+    /**
+     * 用户指派的仓库
+     */
+    private Integer repositoryBelong;
 
     /**
      * 用户账户属性的 getter 以及 setter
@@ -41,10 +52,6 @@ public class UserInfoDTO {
 
     public String getUserName() {
         return userName;
-    }
-
-    public boolean getFirstLogin() {
-        return firstLogin;
     }
 
     public void setFirstLogin(boolean firstLogin) {
@@ -77,6 +84,26 @@ public class UserInfoDTO {
 
     public void setRole(List<String> role) {
         this.role = role;
+    }
+
+    public boolean isFirstLogin() {
+        return firstLogin;
+    }
+
+    public Integer getRepositoryBelong() {
+        return repositoryBelong;
+    }
+
+    public void setRepositoryBelong(Integer repositoryBelong) {
+        this.repositoryBelong = repositoryBelong;
+    }
+
+    public String getAccessIP() {
+        return accessIP;
+    }
+
+    public void setAccessIP(String accessIP) {
+        this.accessIP = accessIP;
     }
 
     @Override

@@ -38,7 +38,7 @@ pageEncoding="UTF-8"%>
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle"
                            data-toggle="dropdown"> <span class="glyphicon glyphicon-user"></span>
-                            <span>欢迎&nbsp;</span> <span id="nav_userName">用户名:${sessionScope.userName}</span>
+                            <span>欢迎&nbsp;</span> <span id="nav_userName">用户名:${sessionScope.userInfo.userName}</span>
                             <span class="caret"></span>
                         </a>
                         <ul class="dropdown-menu">
@@ -351,9 +351,9 @@ pageEncoding="UTF-8"%>
                             <div class="form-group">
                                 <label for="" class="control-label col-md-4 col-sm-4"> 用户ID: </label>
                                 <div class="col-md-6 col-sm-6">
-                                    <span class="hidden" id="userID">${sessionScope.userID }</span>
-                                    <span class="hidden" id="isFirstLogin">${sessionScope.firstLogin}</span>
-                                    <p class="form-control-static">${sessionScope.userID }</p>
+                                    <span class="hidden" id="userID">${sessionScope.userInfo.userID }</span>
+                                    <span class="hidden" id="isFirstLogin">${sessionScope.userInfo.firstLogin}</span>
+                                    <p class="form-control-static">${sessionScope.userInfo.userID }</p>
                                 </div>
                             </div>
 

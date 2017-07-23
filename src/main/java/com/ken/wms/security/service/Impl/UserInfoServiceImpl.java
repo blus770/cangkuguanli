@@ -134,7 +134,7 @@ public class UserInfoServiceImpl implements UserInfoService {
                     userInfoDO.setUserID(userID);
                     userInfoDO.setUserName(userName);
                     userInfoDO.setPassword(password);
-                    userInfoDO.setFirstLogin(userInfoDTO.getFirstLogin() ? 1 : 0);
+                    userInfoDO.setFirstLogin(userInfoDTO.isFirstLogin() ? 1 : 0);
 
                     // update
                     userInfoMapper.update(userInfoDO);

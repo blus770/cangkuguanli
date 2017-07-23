@@ -1,10 +1,6 @@
 package com.ken.wms.security.realms;
 
-import com.ken.wms.common.service.Interface.RepositoryAdminManageService;
-import com.ken.wms.common.service.Interface.SystemLogService;
-import com.ken.wms.domain.RepositoryAdmin;
 import com.ken.wms.domain.UserInfoDTO;
-import com.ken.wms.exception.RepositoryAdminManageServiceException;
 import com.ken.wms.exception.UserInfoServiceException;
 import com.ken.wms.security.service.Interface.UserInfoService;
 import com.ken.wms.security.util.MD5Util;
@@ -19,9 +15,7 @@ import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.security.NoSuchAlgorithmException;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -34,10 +28,6 @@ public class UserAuthorizingRealm extends AuthorizingRealm {
 
     @Autowired
     private UserInfoService userInfoService;
-    @Autowired
-    private RepositoryAdminManageService repositoryAdminManageService;
-    @Autowired
-    private SystemLogService systemLogService;
 
     /**
      * 对用户进行角色授权
@@ -52,21 +42,10 @@ public class UserAuthorizingRealm extends AuthorizingRealm {
         Set<String> roles = new HashSet<>();
 
         //获取用户角色
-        Object principal = principalCollection.getPrimaryPrincipal();
-        if (principal instanceof String) {
-            String userID = (String) principal;
-            if (StringUtils.isNumeric(userID)) {
-                try {
-                    UserInfoDTO userInfo = userInfoService.getUserInfo(Integer.valueOf(userID));
-                    if (userInfo != null) {
-                        // 设置用户角色
-                        roles.addAll(userInfo.getRole());
-                    }
-                } catch (UserInfoServiceException e) {
-                    // do logger
-                }
-            }
-        }
+        Subject currentSubject = SecurityUtils.getSubject();
+        Session session = currentSubject.getSession();
+        UserInfoDTO userInfo = (UserInfoDTO) session.getAttribute("userInfo");
+        roles.addAll(userInfo.getRole());
 
         return new SimpleAuthorizationInfo(roles);
     }
@@ -86,33 +65,23 @@ public class UserAuthorizingRealm extends AuthorizingRealm {
         String realmName = getName();
         String credentials = "";
 
-        // 获取用户名对应的用户账户信息
         try {
+            // 获取用户名对应的用户账户信息
             UsernamePasswordToken usernamePasswordToken = (UsernamePasswordToken) authenticationToken;
             String principal = usernamePasswordToken.getUsername();
 
             if (!StringUtils.isNumeric(principal))
                 throw new AuthenticationException();
-            Integer userID = Integer.valueOf(principal);
 
+            Integer userID = Integer.valueOf(principal);
             UserInfoDTO userInfoDTO = userInfoService.getUserInfo(userID);
 
             if (userInfoDTO != null) {
                 Subject currentSubject = SecurityUtils.getSubject();
                 Session session = currentSubject.getSession();
 
-                // 设置部分用户信息到 Session
-                session.setAttribute("userID", userID);
-                session.setAttribute("userName", userInfoDTO.getUserName());
-                session.setAttribute("firstLogin", userInfoDTO.getFirstLogin());
-                List<RepositoryAdmin> repositoryAdmin = (List<RepositoryAdmin>) repositoryAdminManageService.selectByID(userInfoDTO.getUserID()).get("data");
-                session.setAttribute("repositoryBelong", "none");
-                if (!repositoryAdmin.isEmpty()){
-                    Integer repositoryBelong = repositoryAdmin.get(0).getRepositoryBelongID();
-                    if (repositoryBelong != null)
-                        session.setAttribute("repositoryBelong", repositoryBelong);
-                }
-
+                // 设置用户信息到 Session
+                session.setAttribute("userInfo", userInfoDTO);
 
                 // 结合验证码对密码进行处理
                 String checkCode = (String) session.getAttribute("checkCode");
@@ -121,10 +90,15 @@ public class UserAuthorizingRealm extends AuthorizingRealm {
                     checkCode = checkCode.toUpperCase();
                     credentials = MD5Util.MD5(password + checkCode);
                 }
+
+                // 清除 session 中的 userInfo 密码敏感信息
+                userInfoDTO.setPassword(null);
             }
+
+            // 返回封装的认证信息
             return new SimpleAuthenticationInfo(principal, credentials, realmName);
 
-        } catch (UserInfoServiceException | RepositoryAdminManageServiceException e) {
+        } catch (UserInfoServiceException e) {
             throw new AuthenticationException();
         }
     }

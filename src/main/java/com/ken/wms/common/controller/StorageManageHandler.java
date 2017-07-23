@@ -5,6 +5,7 @@ import com.ken.wms.common.service.Interface.StorageManageService;
 import com.ken.wms.common.util.Response;
 import com.ken.wms.common.util.ResponseFactory;
 import com.ken.wms.domain.Storage;
+import com.ken.wms.domain.UserInfoDTO;
 import com.ken.wms.exception.StorageManageServiceException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -158,8 +159,9 @@ public class StorageManageHandler {
         long total = 0;
 
         HttpSession session = request.getSession();
-        Integer repositoryID = (Integer) session.getAttribute("repositoryBelong");
-        if (repositoryID != null) {
+        UserInfoDTO userInfo = (UserInfoDTO) session.getAttribute("userInfo");
+        Integer repositoryID = userInfo.getRepositoryBelong();
+        if (repositoryID > 0) {
             Map<String, Object> queryResult = query(searchType, keyword, repositoryID.toString(), offset, limit);
             if (queryResult != null) {
                 rows = (List<Storage>) queryResult.get("data");
@@ -331,8 +333,9 @@ public class StorageManageHandler {
         String fileName = "storageRecord.xlsx";
 
         HttpSession session = request.getSession();
-        Integer sessionRepositoryBelong = (Integer) session.getAttribute("repositoryBelong");
-        if (sessionRepositoryBelong != null && !sessionRepositoryBelong.equals("none"))
+        UserInfoDTO userInfo = (UserInfoDTO) session.getAttribute("userInfo");
+        Integer sessionRepositoryBelong = userInfo.getRepositoryBelong();
+        if (sessionRepositoryBelong > 0)
             repositoryBelong = sessionRepositoryBelong.toString();
 
         List<Storage> storageList = null;

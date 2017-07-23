@@ -138,8 +138,8 @@
 					<div class="form-group">
 						<label for="" class="control-label col-md-4 col-sm-4"> 用户ID: </label>
 						<div class="col-md-8 col-sm-8">
-							<span class="hidden" id="userID">${sessionScope.userID }</span>
-							<p class="form-control-static">${sessionScope.userID }</p>
+							<span class="hidden" id="userID">${sessionScope.userInfo.userID }</span>
+							<p class="form-control-static">${sessionScope.userInfo.userID }</p>
 						</div>
 					</div>
 

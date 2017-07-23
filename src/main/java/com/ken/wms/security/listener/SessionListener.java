@@ -1,6 +1,7 @@
 package com.ken.wms.security.listener;
 
 import com.ken.wms.common.service.Interface.SystemLogService;
+import com.ken.wms.domain.UserInfoDTO;
 import com.ken.wms.exception.SystemLogServiceException;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.session.SessionListenerAdapter;
@@ -42,13 +43,12 @@ public class SessionListener extends SessionListenerAdapter {
      */
     private void sessionDestroyedLog(Session session) {
         // 判断是否为已经登陆的用户, 判断依据是isAuthentication的值
-        String isAuthenticate = (String) session.getAttribute("isAuthenticate");
-        if (isAuthenticate != null && isAuthenticate.equals("true")) {
+        UserInfoDTO userInfo = (UserInfoDTO) session.getAttribute("userInfo");
+        if (userInfo != null) {
             try {
-                Integer userID = (Integer) session.getAttribute("userID");
-                String userName = (String) session.getAttribute("userName");
-                String accessIP = "-";
-                systemLogService.insertAccessRecord(userID, userName, accessIP, SystemLogService.ACCESS_TYPE_LOGOUT);
+                // 记录登出日志
+                systemLogService.insertAccessRecord(userInfo.getUserID(), userInfo.getUserName(),
+                        userInfo.getAccessIP(), SystemLogService.ACCESS_TYPE_LOGOUT);
             } catch (SystemLogServiceException e) {
                 // do log
             }

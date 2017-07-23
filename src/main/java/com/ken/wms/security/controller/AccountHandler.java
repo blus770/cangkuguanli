@@ -1,8 +1,12 @@
 package com.ken.wms.security.controller;
 
+import com.ken.wms.common.service.Interface.RepositoryAdminManageService;
 import com.ken.wms.common.service.Interface.SystemLogService;
 import com.ken.wms.common.util.Response;
 import com.ken.wms.common.util.ResponseFactory;
+import com.ken.wms.domain.RepositoryAdmin;
+import com.ken.wms.domain.UserInfoDTO;
+import com.ken.wms.exception.RepositoryAdminManageServiceException;
 import com.ken.wms.exception.SystemLogServiceException;
 import com.ken.wms.exception.UserAccountServiceException;
 import com.ken.wms.security.service.Interface.AccountService;
@@ -26,6 +30,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -44,6 +49,8 @@ public class AccountHandler {
     private AccountService accountService;
     @Autowired
     private SystemLogService systemLogService;
+    @Autowired
+    private RepositoryAdminManageService repositoryAdminManageService;
 
     private static final String USER_ID = "id";
     private static final String USER_NAME = "userName";
@@ -72,29 +79,48 @@ public class AccountHandler {
         if (currentUser != null && !currentUser.isAuthenticated()) {
             String id = (String) user.get(USER_ID);
             String password = (String) user.get(USER_PASSWORD);
+            Session session = currentUser.getSession();
             UsernamePasswordToken token = new UsernamePasswordToken(id, password);
 
-            // 执行登陆操作
             try {
+                // 执行登陆操作
                 currentUser.login(token);
 
-                // 设置登陆状态并记录
-                Session session = currentUser.getSession();
-                session.setAttribute("isAuthenticate", "true");
-                Integer userID_integer = (Integer) session.getAttribute("userID");
-                String userName = (String) session.getAttribute("userName");
-                String accessIP = session.getHost();
-                systemLogService.insertAccessRecord(userID_integer, userName, accessIP, SystemLogService.ACCESS_TYPE_LOGIN);
+                /* 设置 session 中 userInfo 的其他信息 */
+                UserInfoDTO userInfo = (UserInfoDTO) session.getAttribute("userInfo");
+                // 设置登陆IP
+                userInfo.setAccessIP(session.getHost());
+                // 查询并设置用户所属的仓库ID
+                List<RepositoryAdmin> repositoryAdmin = (List<RepositoryAdmin>) repositoryAdminManageService.selectByID(userInfo.getUserID()).get("data");
+                userInfo.setRepositoryBelong(-1);
+                if (!repositoryAdmin.isEmpty()) {
+                    Integer repositoryBelong = repositoryAdmin.get(0).getRepositoryBelongID();
+                    if (repositoryBelong != null) {
+                        userInfo.setRepositoryBelong(repositoryBelong);
+                    }
+                }
 
+                // 记录登陆日志
+                systemLogService.insertAccessRecord(userInfo.getUserID(), userInfo.getUserName(),
+                        userInfo.getAccessIP(), SystemLogService.ACCESS_TYPE_LOGIN);
+
+                // 设置登陆成功响应
                 result = Response.RESPONSE_RESULT_SUCCESS;
+
             } catch (UnknownAccountException e) {
                 errorMsg = "unknownAccount";
             } catch (IncorrectCredentialsException e) {
                 errorMsg = "incorrectCredentials";
             } catch (AuthenticationException e) {
                 errorMsg = "authenticationError";
-            } catch (SystemLogServiceException e) {
+                e.printStackTrace();
+            } catch (SystemLogServiceException | RepositoryAdminManageServiceException e) {
                 errorMsg = "ServerError";
+            } finally {
+                // 当登陆失败则清除session中的用户信息
+                if (result.equals(Response.RESPONSE_RESULT_ERROR)){
+                    session.setAttribute("userInfo", null);
+                }
             }
         } else {
             errorMsg = "already login";
@@ -152,7 +178,8 @@ public class AccountHandler {
 
         // 获取用户 ID
         HttpSession session = request.getSession();
-        Integer userID = (Integer) session.getAttribute("userID");
+        UserInfoDTO userInfo = (UserInfoDTO) session.getAttribute("userInfo");
+        Integer userID = userInfo.getUserID();
 
         try {
             // 更改密码

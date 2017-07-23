@@ -4,6 +4,7 @@ import com.ken.wms.common.service.Interface.StockRecordManageService;
 import com.ken.wms.common.util.Response;
 import com.ken.wms.common.util.ResponseFactory;
 import com.ken.wms.domain.StockRecordDTO;
+import com.ken.wms.domain.UserInfoDTO;
 import com.ken.wms.exception.StockRecordManageServiceException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
@@ -70,16 +71,17 @@ public class StockRecordManageHandler {
         // 获取 session 中的信息
         Subject currentUser = SecurityUtils.getSubject();
         Session session = currentUser.getSession();
-        String personInCharge = (String) session.getAttribute("userName");
-        Object repositoryIDBelong = session.getAttribute("repositoryBelong");
+        UserInfoDTO userInfo = (UserInfoDTO) session.getAttribute("userInfo");
+        String personInCharge = userInfo == null ? "none" : userInfo.getUserName();
+        Integer repositoryIDBelong = userInfo == null ? -1 : userInfo.getRepositoryBelong();
 
         // 设置非管理员请求的仓库ID
         if (!currentUser.hasRole("systemAdmin")) {
-            if (repositoryIDBelong.getClass() == Integer.class) {
-                repositoryID = (Integer) repositoryIDBelong;
-            } else {
+            if (repositoryIDBelong < 0) {
                 authorizeCheck = false;
                 responseContent.setResponseMsg("You are not authorized");
+            } else {
+                repositoryID = repositoryIDBelong;
             }
         }
 
@@ -129,16 +131,17 @@ public class StockRecordManageHandler {
         // 获取session中的信息
         Subject currentUser = SecurityUtils.getSubject();
         Session session = currentUser.getSession();
-        String personInCharge = (String) session.getAttribute("userName");
-        Object repositoryIDBelong = session.getAttribute("repositoryBelong");
+        UserInfoDTO userInfo = (UserInfoDTO) session.getAttribute("userInfo");
+        String personInCharge = userInfo == null ? "none" : userInfo.getUserName();
+        Integer repositoryIDBelong = userInfo == null ? -1 : userInfo.getRepositoryBelong();
 
         // 设置非管理员请求的仓库ID
         if (!currentUser.hasRole("systemAdmin")) {
-            if (repositoryIDBelong.getClass() == Integer.class) {
-                repositoryID = (Integer) repositoryIDBelong;
-            } else {
+            if (repositoryIDBelong < 0) {
                 authorizeCheck = false;
                 responseContent.setResponseMsg("You are not authorized");
+            } else {
+                repositoryID = repositoryIDBelong;
             }
         }
 

@@ -73,7 +73,7 @@ public class StorageManageHandler {
                         Integer repositoryID = Integer.valueOf(repositoryBelong);
                         queryResult = storageManageService.selectByGoodsID(goodsID, repositoryID, offset, limit);
                     } else
-                        queryResult = storageManageService.selectByGoodsID(goodsID, null, offset, limit);
+                        queryResult = storageManageService.selectByGoodsID(goodsID, -1, offset, limit);
                 }
                 break;
             case SEARCH_BY_GOODS_TYPE:
@@ -81,14 +81,14 @@ public class StorageManageHandler {
                     Integer repositoryID = Integer.valueOf(repositoryBelong);
                     queryResult = storageManageService.selectByGoodsType(keyword, repositoryID, offset, limit);
                 } else
-                    queryResult = storageManageService.selectByGoodsType(keyword, null, offset, limit);
+                    queryResult = storageManageService.selectByGoodsType(keyword, -1, offset, limit);
                 break;
             case SEARCH_BY_GOODS_NAME:
                 if (StringUtils.isNumeric(repositoryBelong)) {
                     Integer repositoryID = Integer.valueOf(repositoryBelong);
                     queryResult = storageManageService.selectByGoodsName(keyword, repositoryID, offset, limit);
                 } else
-                    queryResult = storageManageService.selectByGoodsName(keyword, null, offset, limit);
+                    queryResult = storageManageService.selectByGoodsName(keyword, -1, offset, limit);
                 break;
             default:
                 // do other thing
